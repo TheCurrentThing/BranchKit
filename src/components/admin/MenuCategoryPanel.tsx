@@ -26,8 +26,8 @@ export function MenuCategoryPanel({
 }) {
   if (!category) {
     return (
-      <section className="rounded-3xl border border-[var(--color-border)] bg-white/86 p-5 shadow-panel">
-        <p className="text-sm text-[var(--color-foreground)]/68">
+      <section className="admin-panel rounded-[1.5rem] p-5">
+        <p className="text-sm text-white/50">
           Start by adding a menu section on the left.
         </p>
       </section>
@@ -37,14 +37,15 @@ export function MenuCategoryPanel({
   const redirectPath = `/admin/menu?category=${category.id}${selectedItemId ? `&item=${selectedItemId}` : ""}`;
 
   return (
-    <section className="rounded-3xl border border-[var(--color-border)] bg-white/86 shadow-panel">
-      <div className="border-b border-[var(--color-border)] px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
-          Selected Section
+    <section className="admin-panel rounded-[1.5rem]">
+      <div className="border-b border-white/[0.08] px-5 py-4">
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--color-primary)]">
+          Category Controls
         </p>
-        <h2 className="mt-1 font-heading text-2xl text-[var(--color-foreground)]">
-          {category.name}
-        </h2>
+        <h2 className="mt-2 text-[1.35rem] font-semibold text-white">{category.name}</h2>
+        <p className="mt-2 text-sm text-white/50">
+          Manage the active category without leaving the current console state.
+        </p>
       </div>
 
       <div className="space-y-4 p-5">

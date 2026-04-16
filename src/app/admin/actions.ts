@@ -18,6 +18,7 @@ import { getSupabaseAdminClientOrThrow, isSupabaseConfigured } from "@/lib/supab
 const PUBLIC_PATHS = ["/", "/menu", "/about", "/contact"];
 const BRAND_ASSET_BUCKET = "restaurant-assets";
 const BRAND_LOGO_FOLDER = "branding-logos";
+const HOMEPAGE_HERO_FOLDER = "homepage-hero";
 const GALLERY_IMAGE_FOLDER = "gallery-images";
 const ADMIN_INDEX_PATHS = [
   "/admin",
@@ -312,6 +313,39 @@ async function uploadGalleryImageFile(file: File, businessName: string) {
   return data.publicUrl;
 }
 
+async function uploadHomepageHeroImageFile(file: File, businessName: string) {
+  const client = getSupabaseAdminClientOrThrow();
+
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Hero image must be 5MB or smaller.");
+  }
+
+  await ensureBrandAssetBucket();
+
+  const safeBusinessName = slugify(businessName) || "restaurant";
+  const safeFileName = sanitizeFileName(file.name);
+  const storagePath = `${HOMEPAGE_HERO_FOLDER}/${safeBusinessName}-${Date.now()}-${safeFileName}`;
+
+  const { error: uploadError } = await client.storage
+    .from(BRAND_ASSET_BUCKET)
+    .upload(storagePath, file, {
+      upsert: true,
+      contentType: file.type || undefined,
+    });
+
+  if (uploadError) {
+    throw new Error(uploadError.message);
+  }
+
+  const { data } = client.storage.from(BRAND_ASSET_BUCKET).getPublicUrl(storagePath);
+
+  if (!data?.publicUrl) {
+    throw new Error("Hero image upload finished, but the public URL could not be created.");
+  }
+
+  return data.publicUrl;
+}
+
 function readServiceWindow(formData: FormData) {
   const value = readOptionalString(formData, "service_window");
 
@@ -353,6 +387,51 @@ async function saveRecord({
 
   if (result.error) {
     throw new Error(result.error.message);
+  }
+}
+
+function readMissingHomepageContentColumn(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  const match = message.match(
+    /Could not find the '([^']+)' column of 'homepage_content' in the schema cache/i,
+  );
+
+  return match?.[1] ?? null;
+}
+
+async function saveHomepageContentRecord({
+  id,
+  values,
+}: {
+  id: string | null;
+  values: Record<string, unknown>;
+}) {
+  const filteredValues = { ...values };
+  const removedColumns = new Set<string>();
+
+  while (true) {
+    try {
+      await saveRecord({
+        table: "homepage_content",
+        id,
+        values: filteredValues,
+      });
+
+      return;
+    } catch (error) {
+      const missingColumn = readMissingHomepageContentColumn(error);
+
+      if (
+        !missingColumn ||
+        removedColumns.has(missingColumn) ||
+        !(missingColumn in filteredValues)
+      ) {
+        throw error;
+      }
+
+      removedColumns.add(missingColumn);
+      delete filteredValues[missingColumn];
+    }
   }
 }
 
@@ -561,6 +640,133 @@ async function resolveGalleryImageId(reference: string | null) {
   }
 
   return bootstrapGalleryImage(reference);
+}
+
+async function bootstrapSpecialsCollection() {
+  const client = getSupabaseAdminClientOrThrow();
+  const existingSpecialsResult = await client
+    .from("specials")
+    .select("id, title, sort_order");
+
+  if (existingSpecialsResult.error) {
+    throw new Error(existingSpecialsResult.error.message);
+  }
+
+  const existingSpecials = existingSpecialsResult.data ?? [];
+  const specialIdBySourceId = new Map<string, string>();
+
+  for (const sourceSpecial of seedSitePayload.specials) {
+    const existingSpecial = existingSpecials.find(
+      (special) =>
+        special.sort_order === sourceSpecial.sortOrder &&
+        special.title === sourceSpecial.title,
+    );
+
+    if (existingSpecial?.id) {
+      specialIdBySourceId.set(sourceSpecial.id, existingSpecial.id);
+      continue;
+    }
+
+    const insertedSpecialResult = await client
+      .from("specials")
+      .insert({
+        title: sourceSpecial.title,
+        description: sourceSpecial.description,
+        price: sourceSpecial.price,
+        label: sourceSpecial.label,
+        is_active: sourceSpecial.isActive,
+        is_featured: sourceSpecial.isFeatured,
+        sort_order: sourceSpecial.sortOrder,
+      })
+      .select("id")
+      .single();
+
+    if (insertedSpecialResult.error || !insertedSpecialResult.data) {
+      throw new Error(
+        insertedSpecialResult.error?.message ??
+          "Unable to create the live specials list.",
+      );
+    }
+
+    specialIdBySourceId.set(sourceSpecial.id, insertedSpecialResult.data.id);
+  }
+
+  return specialIdBySourceId;
+}
+
+async function resolveSpecialId(reference: string | null) {
+  if (!reference) {
+    return null;
+  }
+
+  if (isUuid(reference)) {
+    return reference;
+  }
+
+  const specialIdBySourceId = await bootstrapSpecialsCollection();
+  return specialIdBySourceId.get(reference) ?? null;
+}
+
+async function bootstrapHoursCollection() {
+  const client = getSupabaseAdminClientOrThrow();
+  const existingHoursResult = await client
+    .from("business_hours")
+    .select("id, day_label, sort_order");
+
+  if (existingHoursResult.error) {
+    throw new Error(existingHoursResult.error.message);
+  }
+
+  const existingHours = existingHoursResult.data ?? [];
+  const hourIdBySourceId = new Map<string, string>();
+
+  for (const sourceHour of seedSitePayload.hours) {
+    const existingHour = existingHours.find(
+      (hour) =>
+        hour.sort_order === sourceHour.sortOrder &&
+        hour.day_label === sourceHour.dayLabel,
+    );
+
+    if (existingHour?.id) {
+      hourIdBySourceId.set(sourceHour.id, existingHour.id);
+      continue;
+    }
+
+    const insertedHourResult = await client
+      .from("business_hours")
+      .insert({
+        day_label: sourceHour.dayLabel,
+        open_text: sourceHour.openText,
+        sort_order: sourceHour.sortOrder,
+        is_active: sourceHour.isActive,
+      })
+      .select("id")
+      .single();
+
+    if (insertedHourResult.error || !insertedHourResult.data) {
+      throw new Error(
+        insertedHourResult.error?.message ??
+          "Unable to create the live hours rows.",
+      );
+    }
+
+    hourIdBySourceId.set(sourceHour.id, insertedHourResult.data.id);
+  }
+
+  return hourIdBySourceId;
+}
+
+async function resolveHourId(reference: string | null) {
+  if (!reference) {
+    return null;
+  }
+
+  if (isUuid(reference)) {
+    return reference;
+  }
+
+  const hourIdBySourceId = await bootstrapHoursCollection();
+  return hourIdBySourceId.get(reference) ?? null;
 }
 
 async function deleteRecord({
@@ -825,8 +1031,7 @@ async function upsertHomepageContentPatch(
   try {
     await getAdminClient(path);
     const base = await getHomepageContentBase();
-    await saveRecord({
-      table: "homepage_content",
+    await saveHomepageContentRecord({
       id: base.id,
       values: {
         ...base.values,
@@ -1098,50 +1303,80 @@ export async function saveFeatureSettingsAction(formData: FormData) {
 export async function saveHomepageContentAction(formData: FormData) {
   const path = resolveRedirectPath(formData, "/admin/homepage");
 
-  return upsertHomepageContentPatch(
-    {
-      hero_eyebrow: readRequiredString(formData, "hero_eyebrow", "Small headline"),
-      hero_headline: readRequiredString(formData, "hero_headline", "Main headline"),
-      hero_subheadline: readRequiredString(formData, "hero_subheadline", "Hero text"),
-      hero_primary_cta_label: readRequiredString(
-        formData,
-        "hero_primary_cta_label",
-        "Main button text",
-      ),
-      hero_primary_cta_href: readRequiredString(
-        formData,
-        "hero_primary_cta_href",
-        "Main button link",
-      ),
-      hero_secondary_cta_label: readRequiredString(
-        formData,
-        "hero_secondary_cta_label",
-        "Second button text",
-      ),
-      hero_secondary_cta_href: readRequiredString(
-        formData,
-        "hero_secondary_cta_href",
-        "Second button link",
-      ),
-      hero_image_url: readOptionalString(formData, "hero_image_url"),
-      quick_info_hours_label: readRequiredString(
-        formData,
-        "quick_info_hours_label",
-        "Quick hours summary",
-      ),
-      ordering_notice: readOptionalString(formData, "ordering_notice"),
-      gallery_title: readOptionalString(formData, "gallery_title"),
-      gallery_subtitle: readOptionalString(formData, "gallery_subtitle"),
-      menu_preview_title: readOptionalString(formData, "menu_preview_title"),
-      menu_preview_subtitle: readOptionalString(formData, "menu_preview_subtitle"),
-      contact_title: readOptionalString(formData, "contact_title"),
-      contact_subtitle: readOptionalString(formData, "contact_subtitle"),
-      about_title: readRequiredString(formData, "about_title", "About title"),
-      about_body: readParagraphs(formData, "about_body"),
-    },
-    path,
-    "Homepage content saved.",
-  );
+  try {
+    await getAdminClient(path);
+
+    const heroImageFile = readOptionalFile(formData, "hero_image_file");
+    const businessName = readRequiredString(formData, "business_name", "Business name");
+    let uploadedHeroImageUrl: string | null = null;
+
+    if (heroImageFile) {
+      uploadedHeroImageUrl = await uploadHomepageHeroImageFile(
+        heroImageFile,
+        businessName,
+      );
+    }
+
+    const base = await getHomepageContentBase();
+    await saveHomepageContentRecord({
+      id: base.id,
+      values: {
+        ...base.values,
+        hero_eyebrow: readRequiredString(formData, "hero_eyebrow", "Small headline"),
+        hero_headline: readRequiredString(formData, "hero_headline", "Main headline"),
+        hero_subheadline: readRequiredString(formData, "hero_subheadline", "Hero text"),
+        hero_primary_cta_label: readRequiredString(
+          formData,
+          "hero_primary_cta_label",
+          "Main button text",
+        ),
+        hero_primary_cta_href: readRequiredString(
+          formData,
+          "hero_primary_cta_href",
+          "Main button link",
+        ),
+        hero_secondary_cta_label: readRequiredString(
+          formData,
+          "hero_secondary_cta_label",
+          "Second button text",
+        ),
+        hero_secondary_cta_href: readRequiredString(
+          formData,
+          "hero_secondary_cta_href",
+          "Second button link",
+        ),
+        hero_image_url:
+          uploadedHeroImageUrl ?? readOptionalString(formData, "hero_image_url"),
+        quick_info_hours_label: readRequiredString(
+          formData,
+          "quick_info_hours_label",
+          "Quick hours summary",
+        ),
+        ordering_notice: readOptionalString(formData, "ordering_notice"),
+        gallery_title: readOptionalString(formData, "gallery_title"),
+        gallery_subtitle: readOptionalString(formData, "gallery_subtitle"),
+        menu_preview_title: readOptionalString(formData, "menu_preview_title"),
+        menu_preview_subtitle: readOptionalString(formData, "menu_preview_subtitle"),
+        contact_title: readOptionalString(formData, "contact_title"),
+        contact_subtitle: readOptionalString(formData, "contact_subtitle"),
+        about_title: readRequiredString(formData, "about_title", "About title"),
+        about_body: readParagraphs(formData, "about_body"),
+      },
+    });
+
+    revalidateRestaurantPaths();
+    redirectWithState(path, {
+      status: uploadedHeroImageUrl
+        ? "Homepage content saved and hero image uploaded."
+        : "Homepage content saved.",
+    });
+  } catch (error) {
+    rethrowIfRedirectSignal(error);
+    redirectWithState(path, {
+      error:
+        error instanceof Error ? error.message : "Unable to save homepage content.",
+    });
+  }
 }
 
 export async function saveQuickHoursAction(formData: FormData) {
@@ -1272,10 +1507,11 @@ export async function saveSpecialAction(formData: FormData) {
     await getAdminClient(path);
 
     const id = readOptionalString(formData, "special_id");
+    const resolvedSpecialId = await resolveSpecialId(id);
 
     await saveRecord({
       table: "specials",
-      id,
+      id: resolvedSpecialId,
       values: {
         title: readRequiredString(formData, "title", "Special name"),
         description: readRequiredString(formData, "description", "Description"),
@@ -1304,7 +1540,13 @@ export async function deleteSpecialAction(formData: FormData) {
     await getAdminClient(path);
 
     const id = readRequiredString(formData, "special_id", "Special");
-    await deleteRecord({ table: "specials", id });
+    const resolvedSpecialId = await resolveSpecialId(id);
+
+    if (!resolvedSpecialId) {
+      throw new Error("The selected special could not be found.");
+    }
+
+    await deleteRecord({ table: "specials", id: resolvedSpecialId });
 
     revalidateRestaurantPaths();
     redirectWithState(path, { status: "Special deleted." });
@@ -1516,10 +1758,11 @@ export async function saveHourAction(formData: FormData) {
     await getAdminClient(path);
 
     const id = readOptionalString(formData, "hour_id");
+    const resolvedHourId = await resolveHourId(id);
 
     await saveRecord({
       table: "business_hours",
-      id,
+      id: resolvedHourId,
       values: {
         day_label: readRequiredString(formData, "day_label", "Day"),
         open_text: readRequiredString(formData, "open_text", "Open hours"),
@@ -1545,7 +1788,13 @@ export async function deleteHourAction(formData: FormData) {
     await getAdminClient(path);
 
     const id = readRequiredString(formData, "hour_id", "Hours row");
-    await deleteRecord({ table: "business_hours", id });
+    const resolvedHourId = await resolveHourId(id);
+
+    if (!resolvedHourId) {
+      throw new Error("The selected hours row could not be found.");
+    }
+
+    await deleteRecord({ table: "business_hours", id: resolvedHourId });
 
     revalidateRestaurantPaths();
     redirectWithState(path, { status: "Hours row deleted." });
@@ -1607,8 +1856,7 @@ export async function saveSetupHoursAction(formData: FormData) {
     );
 
     const homepageBase = await getHomepageContentBase();
-    await saveRecord({
-      table: "homepage_content",
+    await saveHomepageContentRecord({
       id: homepageBase.id,
       values: {
         ...homepageBase.values,

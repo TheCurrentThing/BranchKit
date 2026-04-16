@@ -38,21 +38,19 @@ export function MenuSectionList({
   selectedCategoryId: string | null;
 }) {
   return (
-    <section className="rounded-3xl border border-[var(--color-border)] bg-white/86 shadow-panel">
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] px-5 py-4">
+    <section className="admin-panel min-h-0 overflow-hidden rounded-[1.5rem]">
+      <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] px-5 py-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
-            Menu Sections
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--color-primary)]">
+            Categories
           </p>
-          <p className="mt-1 text-sm text-[var(--color-foreground)]/62">
-            Pick a section first.
-          </p>
+          <p className="mt-2 text-sm text-white/45">Select the category lane first.</p>
         </div>
         <details className="relative">
-          <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full bg-[var(--color-primary)] text-xl font-semibold text-white shadow-sm">
+          <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-[0.95rem] border border-[var(--color-primary)] bg-[var(--color-primary)] text-xl font-semibold text-white shadow-[0_0_24px_rgba(181,84,61,0.18)] transition hover:opacity-95">
             +
           </summary>
-          <div className="absolute right-0 top-12 z-20 w-[320px] rounded-3xl border border-[var(--color-border)] bg-white p-4 shadow-xl">
+          <div className="admin-panel absolute right-0 top-12 z-20 w-[320px] rounded-[1.2rem] p-4 shadow-xl">
             <form action={saveCategoryAction} className="space-y-4">
               <HiddenField name="redirect_to" value="/admin/menu" />
               <AdminInput label="Section Name" name="name" required />
@@ -82,7 +80,7 @@ export function MenuSectionList({
         </details>
       </div>
 
-      <div className="space-y-2 p-3">
+      <div className="admin-scrollbar min-h-0 space-y-2 overflow-y-auto p-3">
         {categories.length > 0 ? (
           categories.map((category) => {
             const isSelected = category.id === selectedCategoryId;
@@ -92,27 +90,28 @@ export function MenuSectionList({
                 key={category.id}
                 href={`/admin/menu?category=${category.id}`}
                 className={[
-                  "block rounded-2xl border px-4 py-3 transition",
+                  "admin-panel admin-panel-hover block rounded-[1rem] px-4 py-3",
                   isSelected
-                    ? "border-[var(--color-primary)] bg-[color:rgba(165,60,47,0.08)]"
-                    : "border-[var(--color-border)] bg-[var(--color-muted)]/20 hover:bg-[var(--color-muted)]/42",
+                    ? "border-[var(--color-primary)] bg-[linear-gradient(180deg,rgba(181,84,61,0.16),rgba(181,84,61,0.05))]"
+                    : "border-white/[0.08] bg-black/20",
                 ].join(" ")}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-[var(--color-foreground)]">
-                      {category.name}
+                    <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-white/34">
+                      {category.slug || "category"}
                     </p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
-                      {category.items.length} items - {getServiceWindowLabel(category.serviceWindow)}
+                    <p className="mt-1 truncate font-semibold text-white">{category.name}</p>
+                    <p className="mt-1 text-xs text-white/55">
+                      {category.items.length} items // {getServiceWindowLabel(category.serviceWindow)}
                     </p>
                   </div>
                   <span
                     className={[
-                      "shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]",
+                      "shrink-0 rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.18em]",
                       category.isActive
-                        ? "bg-[color:rgba(33,115,70,0.12)] text-[color:#1f6b42]"
-                        : "bg-[var(--color-muted)] text-[var(--color-foreground)]/68",
+                        ? "bg-[color:rgba(33,115,70,0.16)] text-emerald-300"
+                        : "bg-white/[0.06] text-white/50",
                     ].join(" ")}
                   >
                     {category.isActive ? "Live" : "Hidden"}
@@ -122,7 +121,7 @@ export function MenuSectionList({
             );
           })
         ) : (
-          <div className="rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-muted)]/20 px-4 py-5 text-sm text-[var(--color-foreground)]/68">
+          <div className="rounded-[1rem] border border-dashed border-white/[0.1] bg-black/20 px-4 py-5 text-sm text-white/50">
             No menu sections yet. Use the + button here to add the first one.
           </div>
         )}

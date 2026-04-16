@@ -1,13 +1,27 @@
 import type { BrandConfig, BusinessHour, SiteSettings } from "@/types/site";
 
+function buildHoursSummary(hours: BusinessHour[], fallback: string) {
+  if (hours.length === 0) {
+    return fallback;
+  }
+
+  return [...hours]
+    .sort((left, right) => left.sortOrder - right.sortOrder)
+    .map((entry) => `${entry.dayLabel} ${entry.openText}`)
+    .join(" • ");
+}
+
 export function QuickInfoBar({
   brand,
   settings,
+  hours,
 }: {
   brand: BrandConfig;
   settings: SiteSettings;
   hours: BusinessHour[];
 }) {
+  const hoursSummary = buildHoursSummary(hours, settings.quickInfoHoursLabel);
+
   return (
     <section className="border-b border-[var(--color-border)] bg-[var(--color-muted)]">
       <div className="mx-auto grid max-w-6xl gap-3 px-4 py-3 sm:grid-cols-2 sm:px-6 md:grid-cols-3 lg:px-8">
@@ -32,7 +46,7 @@ export function QuickInfoBar({
             Hours
           </p>
           <p className="mt-2 text-base font-semibold leading-relaxed text-[var(--color-foreground)]">
-            {settings.quickInfoHoursLabel}
+            {hoursSummary}
           </p>
         </div>
       </div>

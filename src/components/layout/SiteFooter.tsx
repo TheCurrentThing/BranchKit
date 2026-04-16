@@ -12,12 +12,14 @@ export function SiteFooter({
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-background)]">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3 sm:px-6 lg:px-8">
         <div>
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
+            Brand
+          </p>
           <h3 className="font-heading text-2xl text-[var(--color-foreground)]">
             {brand.businessName}
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-[var(--color-foreground)]/72">
-            Reusable local restaurant website system built for fast deployment,
-            owner-edited content, and practical small-business maintenance.
+            {brand.tagline}
           </p>
         </div>
         <div>

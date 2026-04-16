@@ -6,6 +6,7 @@ import {
   PendingDeleteButton,
   PendingSubmitButton,
 } from "@/components/admin/SubmitButtons";
+import { cn } from "@/lib/utils";
 
 type InputProps = {
   label: string;
@@ -51,22 +52,38 @@ export function AdminCard({
   title,
   description,
   children,
+  className,
+  bodyClassName,
+  eyebrow,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  eyebrow?: string;
 }) {
   return (
-    <Card className="bg-white/86">
-      <CardHeader>
-        <CardTitle className="text-stone-900">{title}</CardTitle>
+    <Card
+      className={cn(
+        "admin-panel overflow-hidden rounded-[1.65rem] border-white/[0.08] bg-transparent text-white",
+        className,
+      )}
+    >
+      <CardHeader className="border-b border-white/[0.08] px-5 py-4">
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
+          {eyebrow ?? "System Panel"}
+        </p>
+        <CardTitle className="mt-2 text-[1.45rem] leading-tight text-white">
+          {title}
+        </CardTitle>
         {description ? (
-          <p className="mt-2 text-sm text-stone-600">
-            {description}
-          </p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/55">{description}</p>
         ) : null}
       </CardHeader>
-      <CardContent className="space-y-4">{children}</CardContent>
+      <CardContent className={cn("space-y-4 px-5 py-4", bodyClassName)}>
+        {children}
+      </CardContent>
     </Card>
   );
 }
@@ -83,7 +100,7 @@ export function AdminInput({
 }: InputProps) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-white/48">
         {label}
       </span>
       <input
@@ -94,7 +111,7 @@ export function AdminInput({
         required={required}
         step={step}
         min={min}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]"
+        className="w-full rounded-[1rem] border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[var(--color-primary)] focus:bg-black/40"
       />
     </label>
   );
@@ -110,7 +127,7 @@ export function AdminTextarea({
 }: TextareaProps) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-white/48">
         {label}
       </span>
       <textarea
@@ -119,7 +136,7 @@ export function AdminTextarea({
         rows={rows}
         placeholder={placeholder}
         required={required}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]"
+        className="w-full rounded-[1rem] border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[var(--color-primary)] focus:bg-black/40"
       />
     </label>
   );
@@ -131,7 +148,7 @@ export function AdminCheckbox({
   defaultChecked,
 }: CheckboxProps) {
   return (
-    <label className="flex items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900">
+    <label className="flex items-center gap-3 rounded-[1rem] border border-white/10 bg-black/30 px-4 py-3 text-sm text-white transition hover:border-white/16">
       <input
         name={name}
         type="checkbox"
@@ -151,13 +168,13 @@ export function AdminSelect({
 }: SelectProps) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-white/48">
         {label}
       </span>
       <select
         name={name}
         defaultValue={defaultValue}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-[var(--color-primary)]"
+        className="w-full rounded-[1rem] border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--color-primary)] focus:bg-black/40"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -177,17 +194,17 @@ export function AdminFileInput({
 }: FileInputProps) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-white/48">
         {label}
       </span>
       <input
         name={name}
         type="file"
         accept={accept}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-700 outline-none transition file:mr-4 file:rounded-xl file:border-0 file:bg-[var(--color-primary)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+        className="w-full rounded-[1rem] border border-white/10 bg-black/30 px-4 py-3 text-sm text-white/70 outline-none transition file:mr-4 file:rounded-xl file:border-0 file:bg-[var(--color-primary)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
       />
       {helperText ? (
-        <p className="text-xs text-stone-500">{helperText}</p>
+        <p className="text-xs text-white/45">{helperText}</p>
       ) : null}
     </label>
   );
@@ -219,7 +236,11 @@ export function PreviewLink({
   label?: string;
 }) {
   return (
-    <Button asChild variant="outline">
+    <Button
+      asChild
+      variant="outline"
+      className="rounded-[0.95rem] border-white/12 bg-white/[0.04] text-white/78 hover:bg-white/[0.07]"
+    >
       <a href={href} target="_blank" rel="noopener noreferrer">
         {label}
       </a>
@@ -235,7 +256,11 @@ export function PageLink({
   label: string;
 }) {
   return (
-    <Button asChild variant="outline">
+    <Button
+      asChild
+      variant="outline"
+      className="rounded-[0.95rem] border-white/12 bg-white/[0.04] text-white/78 hover:bg-white/[0.07]"
+    >
       <Link href={href}>{label}</Link>
     </Button>
   );

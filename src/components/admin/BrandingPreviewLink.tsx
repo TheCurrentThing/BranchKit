@@ -33,7 +33,12 @@ export function BrandingPreviewLink({
   }
 
   return (
-    <Button type="button" variant="outline" onClick={openPreview}>
+    <Button
+      type="button"
+      variant="outline"
+      onClick={openPreview}
+      className="rounded-[0.95rem] border-white/12 bg-white/[0.04] text-white/78 hover:bg-white/[0.07]"
+    >
       Preview Website
     </Button>
   );

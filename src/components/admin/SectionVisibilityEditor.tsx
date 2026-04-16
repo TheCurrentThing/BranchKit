@@ -23,7 +23,12 @@ export function SectionVisibilityEditor({
   includeUtilityOptions?: boolean;
 }) {
   return (
-    <AdminCard title={title} description={description}>
+    <AdminCard
+      title={title}
+      description={description}
+      eyebrow="Visibility Matrix"
+      className="rounded-[1.5rem]"
+    >
       <form action={saveFeatureSettingsAction} className="space-y-4">
         <HiddenField name="redirect_to" value={redirectPath} />
 
@@ -110,7 +115,9 @@ export function SectionVisibilityEditor({
           )}
         </div>
 
-        <SaveButton label="Save Section Visibility" />
+        <div className="flex flex-wrap gap-3">
+          <SaveButton label="Save Section Visibility" />
+        </div>
       </form>
     </AdminCard>
   );

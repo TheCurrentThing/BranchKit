@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function DashboardStatCard({
   label,
@@ -12,17 +11,15 @@ export function DashboardStatCard({
   helper: string;
 }) {
   return (
-    <Card className="bg-white/86">
-      <CardHeader className="pb-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-foreground)]/52">
-          {label}
-        </p>
-        <CardTitle className="text-3xl">{value}</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 text-sm text-[var(--color-foreground)]/68">
+    <div className="rounded-[1.75rem] border border-white/[0.07] bg-[#1a1a1a] p-5 text-white">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+        {label}
+      </p>
+      <p className="mt-3 text-3xl font-semibold text-white">{value}</p>
+      <p className="mt-2 text-sm leading-6 text-white/55">
         {helper}
-      </CardContent>
-    </Card>
+      </p>
+    </div>
   );
 }
 
@@ -38,16 +35,14 @@ export function QuickActionCard({
   cta: string;
 }) {
   return (
-    <Card className="bg-white/86">
-      <CardHeader>
-        <CardTitle className="text-xl">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-[var(--color-foreground)]/70">{description}</p>
-        <Button asChild>
+    <div className="rounded-[1.5rem] border border-white/[0.08] bg-black/20 p-4 text-white">
+      <p className="text-lg font-semibold text-white">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-white/58">{description}</p>
+      <div className="mt-4">
+        <Button asChild className="w-full justify-between shadow-none">
           <Link href={href}>{cta}</Link>
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

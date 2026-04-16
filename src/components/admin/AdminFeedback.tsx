@@ -19,12 +19,12 @@ export function AdminFeedback({
   }
 
   const toneClasses = error
-    ? "border-red-200 bg-red-50 text-red-800"
-    : "border-emerald-200 bg-emerald-50 text-emerald-800";
+    ? "border-red-500/30 bg-red-500/10 text-red-100"
+    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-100";
 
   return (
-    <Card className={toneClasses}>
-      <CardContent className="p-4 text-sm font-medium">
+    <Card className={`admin-panel rounded-[1.25rem] ${toneClasses}`}>
+      <CardContent className="px-4 py-3 text-sm font-medium">
         {error ?? status}
       </CardContent>
     </Card>
