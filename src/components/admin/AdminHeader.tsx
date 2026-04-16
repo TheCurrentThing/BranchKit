@@ -6,7 +6,7 @@ export function AdminHeader({
   eyebrow = "Overview",
   title,
   description: _description,
-  previewHref = "/",
+  previewHref = "/preview",
 }: {
   eyebrow?: string;
   title: string;

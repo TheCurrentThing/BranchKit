@@ -54,7 +54,7 @@ export function AdminShell({
           eyebrow={eyebrow ?? title}
           title={title}
           description={description}
-          previewHref={previewHref ?? "/"}
+          previewHref={previewHref ?? "/preview"}
         />
 
         <main

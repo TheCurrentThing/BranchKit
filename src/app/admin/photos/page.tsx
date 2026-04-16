@@ -11,7 +11,7 @@ export default async function AdminPhotosPage() {
       brandName={payload.brand.businessName}
       eyebrow="Photos"
       title="Photo Library"
-      previewHref="/"
+      previewHref="/preview"
       contentClassName="min-h-0 flex flex-1 flex-col overflow-hidden"
     >
       <PhotosEditorClient

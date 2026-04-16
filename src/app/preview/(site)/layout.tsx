@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { StickyMobileBar } from "@/components/layout/StickyMobileBar";
 import { getSitePayload } from "@/lib/queries";
 
-export default async function SiteLayout({
+export default async function PreviewSiteLayout({
   children,
 }: {
   children: React.ReactNode;

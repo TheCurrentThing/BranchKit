@@ -11,7 +11,7 @@ export default async function AdminHomepagePage() {
       brandName={payload.brand.businessName}
       eyebrow="Homepage"
       title="Homepage"
-      previewHref="/"
+      previewHref="/preview"
       contentClassName="min-h-0 flex flex-1 flex-col overflow-hidden"
     >
       <HomepageEditorClient

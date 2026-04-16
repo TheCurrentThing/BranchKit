@@ -10,6 +10,7 @@ const badgeVariants = cva(
         default: "bg-[var(--color-primary)] text-[var(--color-primary-text)]",
         secondary: "bg-[var(--color-muted)] text-[var(--color-foreground)]",
         accent: "bg-[var(--color-accent)] text-[var(--color-accent-text)]",
+        outline: "border border-current bg-transparent",
       },
     },
     defaultVariants: {

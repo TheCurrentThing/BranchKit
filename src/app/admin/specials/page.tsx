@@ -11,7 +11,7 @@ export default async function AdminSpecialsPage() {
       brandName={payload.brand.businessName}
       eyebrow="Specials"
       title="Specials"
-      previewHref="/"
+      previewHref="/preview"
       contentClassName="min-h-0 flex flex-1 flex-col overflow-hidden"
     >
       <SpecialsEditorClient

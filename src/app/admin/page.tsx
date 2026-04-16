@@ -200,7 +200,7 @@ export default async function AdminDashboardPage() {
       brandName={payload.brand.businessName}
       eyebrow="Overview"
       title="Overview"
-      previewHref="/"
+      previewHref="/preview"
       contentClassName="min-h-0 flex flex-1 flex-col overflow-hidden"
     >
       <div

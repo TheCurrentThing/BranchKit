@@ -19,7 +19,7 @@ export default async function AdminHoursPage() {
       brandName={payload.brand.businessName}
       eyebrow="Hours"
       title="Hours Manager"
-      previewHref="/"
+      previewHref="/preview"
       contentClassName="min-h-0 flex flex-1 flex-col overflow-hidden"
     >
       <HoursEditorClient

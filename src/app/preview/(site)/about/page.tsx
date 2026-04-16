@@ -2,7 +2,7 @@ import { AboutSection } from "@/components/sections/AboutSection";
 import { GallerySection } from "@/components/sections/GallerySection";
 import { getSitePayload } from "@/lib/queries";
 
-export default async function AboutPage() {
+export default async function PreviewAboutPage() {
   const payload = await getSitePayload();
 
   return (

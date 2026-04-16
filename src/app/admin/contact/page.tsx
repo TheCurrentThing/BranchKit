@@ -11,7 +11,7 @@ export default async function AdminContactPage() {
       brandName={payload.brand.businessName}
       eyebrow="Contact"
       title="Contact"
-      previewHref="/contact"
+      previewHref="/preview/contact"
       contentClassName="min-h-0 flex flex-1 flex-col overflow-hidden"
     >
       <ContactEditorClient

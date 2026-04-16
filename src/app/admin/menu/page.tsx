@@ -11,7 +11,7 @@ export default async function AdminMenuPage() {
       brandName={payload.brand.businessName}
       eyebrow="Menu"
       title="Menu System"
-      previewHref="/menu"
+      previewHref="/preview/menu"
       contentClassName="min-h-0 flex flex-1 flex-col overflow-hidden"
     >
       <MenuEditorClient categories={payload.menuCategories} />

@@ -1,7 +1,7 @@
 import { ContactSection } from "@/components/sections/ContactSection";
 import { getSitePayload } from "@/lib/queries";
 
-export default async function ContactPage() {
+export default async function PreviewContactPage() {
   const payload = await getSitePayload();
 
   return (

@@ -1,6 +1,6 @@
 import { getMenuCategories } from "@/lib/queries";
 
-export default async function MenuPage() {
+export default async function PreviewMenuPage() {
   const categories = await getMenuCategories();
 
   return (
@@ -49,4 +49,3 @@ export default async function MenuPage() {
     </section>
   );
 }
-

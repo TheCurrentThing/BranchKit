@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@700&family=Inter:wght@400;500&display=swap');
+
+.landing-root {
+  --background: 0 0% 7%;
+  --foreground: 35 35% 93%;
+  --card: 24 11% 9%;
+  --card-foreground: 35 35% 93%;
+  --popover: 24 11% 9%;
+  --popover-foreground: 35 35% 93%;
+  --primary: 29 50% 55%;
+  --primary-foreground: 24 11% 9%;
+  --secondary: 0 0% 7%;
+  --secondary-foreground: 35 35% 93%;
+  --muted: 0 0% 7%;
+  --muted-foreground: 31 14% 68%;
+  --accent: 27 12% 15%;
+  --accent-foreground: 35 35% 93%;
+  --destructive: 0 31% 48%;
+  --destructive-foreground: 24 11% 9%;
+  --border: 23 13% 20%;
+  --input: 23 13% 20%;
+  --ring: 29 50% 55%;
+  --radius: 0.5rem;
+  background-color: hsl(0 0% 7%);
+  color: hsl(35 35% 93%);
+  font-family: 'Inter', system-ui, sans-serif;
+}
