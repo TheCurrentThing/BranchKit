@@ -6,6 +6,7 @@ import {
   saveCategoryAction,
   saveMenuItemAction,
   deleteMenuItemAction,
+  deleteCategoryAction,
 } from "@/app/admin/actions";
 import type { MenuCategory, MenuItem } from "@/types/menu";
 
@@ -103,6 +104,7 @@ export function MenuEditorClient({
   const [showNewCat, setShowNewCat] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isDeleting, startDeleteTransition] = useTransition();
+  const [isDeletingCat, startDeleteCatTransition] = useTransition();
 
   const activeCat = categories.find((c) => c.id === activeCatId) ?? categories[0] ?? null;
 
@@ -154,6 +156,34 @@ export function MenuEditorClient({
       fd.set("menu_item_id", draft.id!);
       await deleteMenuItemAction(fd);
     });
+    setDraft(null);
+  }
+
+  function handleDeleteItemRow(item: MenuItem, e: React.MouseEvent) {
+    e.stopPropagation();
+    startDeleteTransition(async () => {
+      if (!activeCat) return;
+      const fd = new FormData();
+      fd.set("redirect_to", "/admin/menu");
+      fd.set("category_id", activeCat.id);
+      fd.set("menu_item_id", item.id);
+      await deleteMenuItemAction(fd);
+    });
+    if (draft?.id === item.id) setDraft(null);
+  }
+
+  function handleDeleteCategory(catId: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    startDeleteCatTransition(async () => {
+      const fd = new FormData();
+      fd.set("redirect_to", "/admin/menu");
+      fd.set("category_id", catId);
+      await deleteCategoryAction(fd);
+    });
+    if (activeCatId === catId) {
+      const next = categories.find((c) => c.id !== catId);
+      setActiveCatId(next?.id ?? "");
+    }
     setDraft(null);
   }
 
@@ -221,61 +251,67 @@ export function MenuEditorClient({
           {categories.map((cat) => {
             const active = cat.id === activeCatId;
             return (
-              <button
+              <div
                 key={cat.id}
-                type="button"
-                onClick={() => {
-                  setActiveCatId(cat.id);
-                  setDraft(null);
-                  if (isMobile) setMobileTab("items");
-                }}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "9px 10px",
                   borderRadius: 8,
                   marginBottom: 3,
                   background: active ? "rgba(217,119,6,0.1)" : "transparent",
                   border: active
                     ? "1px solid rgba(217,119,6,0.2)"
                     : "1px solid transparent",
-                  cursor: "pointer",
-                  width: "100%",
-                  textAlign: "left",
                   transition: "background 0.12s",
                 }}
-                onMouseEnter={(e) => {
-                  if (!active)
-                    (e.currentTarget as HTMLElement).style.background =
-                      "rgba(255,255,255,0.03)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!active)
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                }}
               >
-                <span
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveCatId(cat.id);
+                    setDraft(null);
+                    if (isMobile) setMobileTab("items");
+                  }}
                   style={{
-                    fontSize: 12,
-                    fontWeight: active ? 600 : 400,
-                    color: active ? "#e2e0d8" : "#7a7a84",
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "9px 6px 9px 10px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    textAlign: "left",
                   }}
                 >
-                  {cat.name}
-                </span>
-                <span
+                  <span style={{ fontSize: 12, fontWeight: active ? 600 : 400, color: active ? "#e2e0d8" : "#7a7a84" }}>
+                    {cat.name}
+                  </span>
+                  <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 4, background: "rgba(255,255,255,0.045)", color: "#4b4b54" }}>
+                    {cat.items.length}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => handleDeleteCategory(cat.id, e)}
+                  disabled={isDeletingCat}
+                  title="Delete category"
                   style={{
-                    fontSize: 10,
-                    padding: "1px 6px",
-                    borderRadius: 4,
-                    background: "rgba(255,255,255,0.045)",
-                    color: "#4b4b54",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "6px 8px 6px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    opacity: 0.4,
+                    transition: "opacity 0.12s",
                   }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "0.4"; }}
                 >
-                  {cat.items.length}
-                </span>
-              </button>
+                  <TrashIcon />
+                </button>
+              </div>
             );
           })}
         </div>
@@ -373,13 +409,13 @@ export function MenuEditorClient({
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 76px 52px 60px",
+              gridTemplateColumns: "1fr 76px 28px 28px 32px",
               padding: "6px 16px",
               borderBottom: "1px solid rgba(255,255,255,0.04)",
             }}
           >
-            {(["Item", "Price", "★", ""] as const).map((h) => (
-              <span key={h} className="label-upper">
+            {(["Item", "Price", "★", "", ""] as const).map((h, i) => (
+              <span key={i} className="label-upper">
                 {h}
               </span>
             ))}
@@ -405,7 +441,7 @@ export function MenuEditorClient({
                   onClick={() => openItem(item)}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 76px 52px 60px",
+                    gridTemplateColumns: "1fr 76px 28px 28px 32px",
                     alignItems: "center",
                     padding: "12px 16px",
                     borderBottom: "1px solid rgba(255,255,255,0.038)",
@@ -450,6 +486,18 @@ export function MenuEditorClient({
                   </span>
                   <span style={{ display: "flex", alignItems: "center" }}>
                     {isSelected ? <EditIconActive /> : <EditIcon />}
+                  </span>
+                  <span
+                    style={{ display: "flex", alignItems: "center" }}
+                    onClick={(e) => handleDeleteItemRow(item, e)}
+                  >
+                    <span
+                      style={{ opacity: 0.35, transition: "opacity 0.12s", display: "flex", cursor: "pointer" }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "0.35"; }}
+                    >
+                      <TrashIcon />
+                    </span>
                   </span>
                 </div>
               );
