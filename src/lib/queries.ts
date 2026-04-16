@@ -1,4 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
+import { fontPackToFontStacks } from "@/lib/font-registry";
 import { seedSitePayload } from "@/lib/seed";
 import { getThemePresetById } from "@/lib/theme";
 import { isDeletedMenuSectionDescription } from "@/lib/menu-tombstones";
@@ -86,6 +87,12 @@ type HomepageContentRow = {
   hero_image_url: string | null;
   quick_info_hours_label: string;
   ordering_notice: string | null;
+  gallery_title: string | null;
+  gallery_subtitle: string | null;
+  menu_preview_title: string | null;
+  menu_preview_subtitle: string | null;
+  contact_title: string | null;
+  contact_subtitle: string | null;
   about_title: string | null;
   about_body: string[] | null;
 };
@@ -199,6 +206,7 @@ function mapBrand(settingsRow: BusinessSettingsRow | null): BrandConfig {
   });
   const legacyColors = themeTokensToLegacyFields(resolvedTheme.resolvedColors);
   const presetFonts = getThemePresetById(themePresetId).fonts;
+  const fontStacks = fontPackToFontStacks(presetFonts);
 
   return {
     businessName: settingsRow.business_name,
@@ -240,10 +248,8 @@ function mapBrand(settingsRow: BusinessSettingsRow | null): BrandConfig {
     secondaryColor: settingsRow.secondary_color ?? legacyColors.secondaryColor,
     accentColor: settingsRow.accent_color ?? legacyColors.accentColor,
     headingFont:
-      settingsRow.heading_font ??
-      `'${presetFonts.heading}', ${presetFonts.headingFallback}`,
-    bodyFont:
-      settingsRow.body_font ?? `'${presetFonts.body}', ${presetFonts.bodyFallback}`,
+      settingsRow.heading_font ?? fontStacks.heading,
+    bodyFont: settingsRow.body_font ?? fontStacks.body,
   };
 }
 
@@ -307,6 +313,20 @@ function mapHomepage(homepageRow: HomepageContentRow | null): HomePageContent {
     specialsIntro: seedSitePayload.homePage.specialsIntro,
     featuredMenuTitle: seedSitePayload.homePage.featuredMenuTitle,
     featuredMenuIntro: seedSitePayload.homePage.featuredMenuIntro,
+    galleryTitle:
+      homepageRow?.gallery_title ?? seedSitePayload.homePage.galleryTitle,
+    gallerySubtitle:
+      homepageRow?.gallery_subtitle ?? seedSitePayload.homePage.gallerySubtitle,
+    menuPreviewTitle:
+      homepageRow?.menu_preview_title ??
+      seedSitePayload.homePage.menuPreviewTitle,
+    menuPreviewSubtitle:
+      homepageRow?.menu_preview_subtitle ??
+      seedSitePayload.homePage.menuPreviewSubtitle,
+    contactTitle:
+      homepageRow?.contact_title ?? seedSitePayload.homePage.contactTitle,
+    contactSubtitle:
+      homepageRow?.contact_subtitle ?? seedSitePayload.homePage.contactSubtitle,
   };
 }
 

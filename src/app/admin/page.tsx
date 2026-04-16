@@ -103,7 +103,7 @@ export default async function AdminDashboardPage() {
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                 Announcement Bar
               </p>
               <p className="mt-3 text-sm text-[var(--color-foreground)]/72">
@@ -119,7 +119,7 @@ export default async function AdminDashboardPage() {
             </div>
 
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                 Today's Special
               </p>
               {featuredSpecial ? (
@@ -130,7 +130,7 @@ export default async function AdminDashboardPage() {
                   <p className="mt-1 text-sm text-[var(--color-foreground)]/72">
                     {featuredSpecial.description}
                   </p>
-                  <p className="mt-3 text-sm font-semibold text-[var(--brand-primary)]">
+                  <p className="mt-3 text-sm font-semibold text-[var(--color-primary)]">
                     {featuredSpecial.price === null
                       ? featuredSpecial.label
                       : `${featuredSpecial.label} • $${featuredSpecial.price.toFixed(2)}`}
@@ -149,7 +149,7 @@ export default async function AdminDashboardPage() {
             </div>
 
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                 Hours Summary
               </p>
               <p className="mt-3 text-sm text-[var(--color-foreground)]/72">
@@ -165,7 +165,7 @@ export default async function AdminDashboardPage() {
             </div>
 
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                 Homepage Visibility
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -208,3 +208,4 @@ export default async function AdminDashboardPage() {
     </AdminShell>
   );
 }
+

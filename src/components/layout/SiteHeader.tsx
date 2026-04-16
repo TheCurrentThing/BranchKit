@@ -14,7 +14,7 @@ export function SiteHeader({ brand }: { brand: BrandConfig }) {
                 className="h-20 w-auto object-contain sm:h-24 lg:h-[7.9rem]"
               />
             ) : (
-              <p className="font-heading text-3xl text-[var(--brand-primary)]">
+              <p className="font-heading text-3xl text-[var(--color-primary)]">
                 {brand.logoText}
               </p>
             )}
@@ -63,7 +63,7 @@ export function SiteHeader({ brand }: { brand: BrandConfig }) {
                   className="h-20 w-auto object-contain"
                 />
               ) : (
-                <p className="font-heading text-2xl text-[var(--brand-primary)]">
+                <p className="font-heading text-2xl text-[var(--color-primary)]">
                   {brand.logoText}
                 </p>
               )}
@@ -100,3 +100,4 @@ export function SiteHeader({ brand }: { brand: BrandConfig }) {
     </header>
   );
 }
+

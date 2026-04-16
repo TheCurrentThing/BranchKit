@@ -1,11 +1,12 @@
 import type { CSSProperties } from "react";
 import {
   DEFAULT_THEME_PRESET_ID,
-  type FontPack,
   type ThemePreset,
   type ThemeTokens,
   getThemePresetById,
 } from "@/lib/theme";
+import { fontPackToFontStacks } from "@/lib/font-registry";
+import type { FontPack } from "@/lib/theme";
 
 export type SavedThemeSettings = {
   themeMode?: "preset" | "custom";
@@ -71,17 +72,12 @@ export function resolveTheme(
   };
 }
 
-export function fontPackToFontStacks(fonts: FontPack) {
-  return {
-    heading: `'${fonts.heading}', ${fonts.headingFallback}`,
-    body: `'${fonts.body}', ${fonts.bodyFallback}`,
-  };
-}
-
 export function buildThemeCssVars(
   tokens: ThemeTokens,
   fonts: FontPack,
 ): CSSProperties {
+  const stacks = fontPackToFontStacks(fonts);
+
   return {
     "--color-background": tokens.background,
     "--color-surface": tokens.surface,
@@ -109,11 +105,8 @@ export function buildThemeCssVars(
     "--color-header-background": tokens.surfaceAlt,
     "--color-announcement-background": tokens.announcementBg,
     "--color-announcement-foreground": tokens.announcementText,
-    "--brand-primary": tokens.primary,
-    "--brand-secondary": tokens.primary,
-    "--brand-accent": tokens.accent,
-    "--font-heading": `'${fonts.heading}', ${fonts.headingFallback}`,
-    "--font-body": `'${fonts.body}', ${fonts.bodyFallback}`,
+    "--font-heading": stacks.heading,
+    "--font-body": stacks.body,
   } as CSSProperties;
 }
 

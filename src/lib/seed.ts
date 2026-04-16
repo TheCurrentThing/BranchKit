@@ -50,6 +50,12 @@ export const seedSitePayload: SitePayload = {
     featuredMenuTitle: "Local Favorites",
     featuredMenuIntro:
       "Big names, prices aligned right, and simple descriptions keep the menu easy to scan.",
+    galleryTitle: "Gallery",
+    gallerySubtitle: "",
+    menuPreviewTitle: "Menu Preview",
+    menuPreviewSubtitle: "",
+    contactTitle: "Contact",
+    contactSubtitle: "",
   },
   aboutPage: {
     title: "A local spot built for regulars",

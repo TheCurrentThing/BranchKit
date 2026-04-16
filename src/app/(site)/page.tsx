@@ -37,10 +37,18 @@ export default async function HomePage() {
         title={payload.homePage.featuredMenuTitle}
         intro={payload.homePage.featuredMenuIntro}
       />
-      <MenuPreviewSection categories={payload.menuCategories} />
+      <MenuPreviewSection
+        categories={payload.menuCategories}
+        title={payload.homePage.menuPreviewTitle}
+        subtitle={payload.homePage.menuPreviewSubtitle}
+      />
       <AboutSection about={payload.aboutPage} />
       {payload.features.showGallery ? (
-        <GallerySection images={payload.galleryImages} />
+        <GallerySection
+          images={payload.galleryImages}
+          title={payload.homePage.galleryTitle}
+          subtitle={payload.homePage.gallerySubtitle}
+        />
       ) : null}
       {payload.features.showTestimonials ? (
         <TestimonialsSection testimonials={payload.testimonials} />
@@ -48,7 +56,8 @@ export default async function HomePage() {
       <ContactSection
         brand={payload.brand}
         hours={payload.hours}
-        features={payload.features}
+        title={payload.homePage.contactTitle}
+        subtitle={payload.homePage.contactSubtitle}
       />
     </>
   );

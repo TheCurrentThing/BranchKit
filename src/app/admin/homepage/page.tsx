@@ -75,7 +75,7 @@ export default async function AdminHomepagePage({ searchParams }: AdminPageProps
               className="flex items-center justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 px-4 py-4"
             >
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                   Step {index + 1}
                 </p>
                 <p className="mt-1 font-semibold text-[var(--color-foreground)]">
@@ -205,6 +205,43 @@ export default async function AdminHomepagePage({ searchParams }: AdminPageProps
               defaultValue={payload.settings.orderingNotice}
               rows={3}
             />
+            <div className="grid gap-4 md:grid-cols-2">
+              <AdminInput
+                label="Menu Preview Title"
+                name="menu_preview_title"
+                defaultValue={payload.homePage.menuPreviewTitle}
+              />
+              <AdminInput
+                label="Gallery Title"
+                name="gallery_title"
+                defaultValue={payload.homePage.galleryTitle}
+              />
+              <AdminInput
+                label="Contact Title"
+                name="contact_title"
+                defaultValue={payload.homePage.contactTitle}
+              />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <AdminTextarea
+                label="Menu Preview Subtitle"
+                name="menu_preview_subtitle"
+                defaultValue={payload.homePage.menuPreviewSubtitle}
+                rows={3}
+              />
+              <AdminTextarea
+                label="Gallery Subtitle"
+                name="gallery_subtitle"
+                defaultValue={payload.homePage.gallerySubtitle}
+                rows={3}
+              />
+              <AdminTextarea
+                label="Contact Subtitle"
+                name="contact_subtitle"
+                defaultValue={payload.homePage.contactSubtitle}
+                rows={3}
+              />
+            </div>
             <AdminInput
               label="About Section Title"
               name="about_title"
@@ -228,3 +265,4 @@ export default async function AdminHomepagePage({ searchParams }: AdminPageProps
     </AdminShell>
   );
 }
+

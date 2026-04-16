@@ -82,6 +82,12 @@ export interface HomePageContent {
   specialsIntro: string;
   featuredMenuTitle: string;
   featuredMenuIntro: string;
+  galleryTitle: string;
+  gallerySubtitle: string;
+  menuPreviewTitle: string;
+  menuPreviewSubtitle: string;
+  contactTitle: string;
+  contactSubtitle: string;
 }
 
 export interface AboutPageContent {

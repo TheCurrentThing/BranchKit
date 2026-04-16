@@ -94,7 +94,7 @@ export function AdminInput({
         required={required}
         step={step}
         min={min}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--brand-primary)]"
+        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]"
       />
     </label>
   );
@@ -119,7 +119,7 @@ export function AdminTextarea({
         rows={rows}
         placeholder={placeholder}
         required={required}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--brand-primary)]"
+        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]"
       />
     </label>
   );
@@ -136,7 +136,7 @@ export function AdminCheckbox({
         name={name}
         type="checkbox"
         defaultChecked={defaultChecked}
-        className="h-4 w-4 accent-[var(--brand-primary)]"
+        className="h-4 w-4 accent-[var(--color-primary)]"
       />
       <span>{label}</span>
     </label>
@@ -157,7 +157,7 @@ export function AdminSelect({
       <select
         name={name}
         defaultValue={defaultValue}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-[var(--brand-primary)]"
+        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-[var(--color-primary)]"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -184,7 +184,7 @@ export function AdminFileInput({
         name={name}
         type="file"
         accept={accept}
-        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-700 outline-none transition file:mr-4 file:rounded-xl file:border-0 file:bg-[var(--brand-primary)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+        className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-700 outline-none transition file:mr-4 file:rounded-xl file:border-0 file:bg-[var(--color-primary)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
       />
       {helperText ? (
         <p className="text-xs text-stone-500">{helperText}</p>
@@ -240,3 +240,4 @@ export function PageLink({
     </Button>
   );
 }
+

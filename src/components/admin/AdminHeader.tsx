@@ -17,7 +17,7 @@ export function AdminHeader({
     <div className="flex flex-col gap-4 rounded-3xl border border-[var(--color-border)] bg-white/88 p-6 shadow-panel lg:flex-row lg:items-start lg:justify-between">
       <div>
         <div className="flex items-center gap-3">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             {eyebrow}
           </p>
           <Badge variant="secondary">Simple Owner View</Badge>
@@ -43,3 +43,4 @@ export function AdminHeader({
     </div>
   );
 }
+

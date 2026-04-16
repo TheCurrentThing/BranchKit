@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  fontPackToFontStacks,
+  getFontVariableClassNamesForPack,
+} from "@/lib/font-registry";
 import { buildThemeCssVars } from "@/lib/theme-utils";
 import type { ThemePreset, ThemeTokens } from "@/lib/theme";
 
@@ -14,6 +18,9 @@ export function ThemePreviewCard({
   preset: ThemePreset;
   tokens: ThemeTokens;
 }) {
+  const fontClassNames = getFontVariableClassNamesForPack(preset.fonts);
+  const fontStacks = fontPackToFontStacks(preset.fonts);
+
   return (
     <div className="space-y-3">
       <div>
@@ -24,7 +31,7 @@ export function ThemePreviewCard({
       </div>
 
       <div
-        className="overflow-hidden rounded-[1.75rem] border shadow-sm"
+        className={`${fontClassNames} overflow-hidden rounded-[1.75rem] border shadow-sm`}
         style={buildThemeCssVars(tokens, preset.fonts)}
       >
         <div className="border-b border-[var(--color-border)] bg-[var(--color-announcement-bg)] px-5 py-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-announcement-text)]">
@@ -37,7 +44,7 @@ export function ThemePreviewCard({
               <p
                 className="text-2xl leading-none text-[var(--color-text)]"
                 style={{
-                  fontFamily: `'${preset.fonts.heading}', ${preset.fonts.headingFallback}`,
+                  fontFamily: fontStacks.heading,
                 }}
               >
                 {businessName}
@@ -45,7 +52,7 @@ export function ThemePreviewCard({
               <p
                 className="mt-1 text-sm text-[var(--color-muted-text)]"
                 style={{
-                  fontFamily: `'${preset.fonts.body}', ${preset.fonts.bodyFallback}`,
+                  fontFamily: fontStacks.body,
                 }}
               >
                 {tagline}
@@ -71,7 +78,7 @@ export function ThemePreviewCard({
               <h4
                 className="mt-3 text-4xl leading-none text-[var(--color-section-dark-text)]"
                 style={{
-                  fontFamily: `'${preset.fonts.heading}', ${preset.fonts.headingFallback}`,
+                  fontFamily: fontStacks.heading,
                 }}
               >
                 Fresh meals that feel right for the neighborhood.
@@ -79,7 +86,7 @@ export function ThemePreviewCard({
               <p
                 className="mt-4 max-w-xl text-sm leading-6 text-[var(--color-section-dark-text)] opacity-80"
                 style={{
-                  fontFamily: `'${preset.fonts.body}', ${preset.fonts.bodyFallback}`,
+                  fontFamily: fontStacks.body,
                 }}
               >
                 Quick specials, easy menu browsing, and simple owner updates.
@@ -93,7 +100,7 @@ export function ThemePreviewCard({
               <p
                 className="mt-2 text-2xl text-[var(--color-section-dark-text)]"
                 style={{
-                  fontFamily: `'${preset.fonts.heading}', ${preset.fonts.headingFallback}`,
+                  fontFamily: fontStacks.heading,
                 }}
               >
                 Country Fried Steak

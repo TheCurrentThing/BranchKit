@@ -20,10 +20,10 @@ export function FeaturedMenuSection({
   }
 
   return (
-    <section className="border-b border-[var(--color-border)] bg-[var(--color-background)] px-4 py-16 sm:px-6 lg:px-8">
+    <section className="border-b border-[var(--color-border)] bg-[var(--color-background)] px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-10">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Featured Menu
           </p>
           <h2 className="mt-2 font-heading text-4xl text-[var(--color-foreground)]">
@@ -42,7 +42,7 @@ export function FeaturedMenuSection({
                     {item.name}
                   </h3>
                   <span className="flex-1 border-b border-dotted border-[var(--color-border)]" />
-                  <span className="text-xl font-bold text-[var(--brand-primary)]">
+                  <span className="text-xl font-bold text-[var(--color-primary)]">
                     ${item.price.toFixed(2)}
                   </span>
                 </div>
@@ -57,3 +57,4 @@ export function FeaturedMenuSection({
     </section>
   );
 }
+

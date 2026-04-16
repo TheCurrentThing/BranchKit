@@ -10,9 +10,9 @@ export function QuickInfoBar({
 }) {
   return (
     <section className="border-b border-[var(--color-border)] bg-[var(--color-muted)]">
-      <div className="mx-auto grid max-w-6xl gap-3 px-4 py-4 md:grid-cols-3 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-3 px-4 py-3 sm:grid-cols-2 sm:px-6 md:grid-cols-3 lg:px-8">
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-4 text-sm shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Address
           </p>
           <p className="mt-1 font-medium text-[var(--color-foreground)]">
@@ -20,18 +20,18 @@ export function QuickInfoBar({
           </p>
         </div>
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-4 text-sm shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Phone
           </p>
           <p className="mt-1 font-medium text-[var(--color-foreground)]">
             {brand.phone}
           </p>
         </div>
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-4 text-sm shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+        <div className="order-first rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-5 py-5 text-sm shadow-sm sm:col-span-2 md:order-none md:col-span-1">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Hours
           </p>
-          <p className="mt-1 font-medium text-[var(--color-foreground)]">
+          <p className="mt-2 text-base font-semibold leading-relaxed text-[var(--color-foreground)]">
             {settings.quickInfoHoursLabel}
           </p>
         </div>
@@ -39,3 +39,4 @@ export function QuickInfoBar({
     </section>
   );
 }
+

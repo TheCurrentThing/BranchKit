@@ -21,7 +21,7 @@ export function AdminSidebar({
     <aside className="space-y-4">
       <Card className="bg-white/88">
         <CardContent className="p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Restaurant Website Manager
           </p>
           <h2 className="mt-2 font-heading text-2xl text-[var(--color-foreground)]">
@@ -53,7 +53,7 @@ export function AdminSidebar({
                   className={[
                     "block rounded-2xl border px-4 py-3 transition",
                     active
-                      ? "border-[var(--brand-primary)] bg-[color:rgba(165,60,47,0.08)]"
+                      ? "border-[var(--color-primary)] bg-[color:rgba(165,60,47,0.08)]"
                       : "border-transparent hover:border-[var(--color-border)] hover:bg-[var(--color-muted)]/55",
                   ].join(" ")}
                 >
@@ -72,3 +72,4 @@ export function AdminSidebar({
     </aside>
   );
 }
+

@@ -47,14 +47,14 @@ export function MenuSectionCard({ category }: { category: MenuCategory }) {
           Order {category.sortOrder}
         </span>
         {category.description?.trim() ? (
-          <span className="rounded-full bg-[color:rgba(165,60,47,0.08)] px-3 py-1 text-[var(--brand-primary)]">
+          <span className="rounded-full bg-[color:rgba(165,60,47,0.08)] px-3 py-1 text-[var(--color-primary)]">
             Has description
           </span>
         ) : null}
       </div>
 
       <div className="mt-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/18 px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
           Items Preview
         </p>
         {previewItems.length > 0 ? (
@@ -80,13 +80,13 @@ export function MenuSectionCard({ category }: { category: MenuCategory }) {
       <div className="mt-4 flex flex-wrap gap-3">
         <Link
           href={`/admin/menu/${category.id}`}
-          className="inline-flex items-center justify-center rounded-xl bg-[var(--brand-primary)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-95"
+          className="inline-flex items-center justify-center rounded-xl bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-95"
         >
           Edit
         </Link>
         <Link
           href={`/admin/menu/${category.id}?item=new`}
-          className="inline-flex items-center justify-center rounded-xl border border-[var(--brand-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--brand-primary)] transition hover:bg-[color:rgba(165,60,47,0.08)]"
+          className="inline-flex items-center justify-center rounded-xl border border-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[color:rgba(165,60,47,0.08)]"
         >
           Add Item
         </Link>
@@ -99,3 +99,4 @@ export function MenuSectionCard({ category }: { category: MenuCategory }) {
     </div>
   );
 }
+

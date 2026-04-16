@@ -21,7 +21,7 @@ export function SiteFooter({
           </p>
         </div>
         <div>
-          <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+          <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Hours
           </h4>
           <div className="mt-3 space-y-2 text-sm text-[var(--color-foreground)]/78">
@@ -34,7 +34,7 @@ export function SiteFooter({
           </div>
         </div>
         <div>
-          <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+          <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Visit
           </h4>
           <p className="mt-3 text-sm text-[var(--color-foreground)]/78">
@@ -42,7 +42,7 @@ export function SiteFooter({
           </p>
           <a
             href={`tel:${brand.phone.replace(/[^\d]/g, "")}`}
-            className="mt-2 block text-sm font-semibold text-[var(--brand-primary)]"
+            className="mt-2 block text-sm font-semibold text-[var(--color-primary)]"
           >
             {brand.phone}
           </a>
@@ -51,3 +51,4 @@ export function SiteFooter({
     </footer>
   );
 }
+

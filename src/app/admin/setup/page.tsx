@@ -399,7 +399,7 @@ export default async function AdminSetupPage({ searchParams }: AdminPageProps) {
       >
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
               Business
             </p>
             <p className="mt-2 font-semibold text-[var(--color-foreground)]">
@@ -414,7 +414,7 @@ export default async function AdminSetupPage({ searchParams }: AdminPageProps) {
             </p>
           </div>
           <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
               Today
             </p>
             <p className="mt-2 text-sm text-[var(--color-foreground)]/70">

@@ -8,7 +8,8 @@ export default async function ContactPage() {
     <ContactSection
       brand={payload.brand}
       hours={payload.hours}
-      features={payload.features}
+      title={payload.homePage.contactTitle}
+      subtitle={payload.homePage.contactSubtitle}
     />
   );
 }

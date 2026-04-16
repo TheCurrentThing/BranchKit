@@ -32,7 +32,7 @@ export default async function AdminBrandingPage({ searchParams }: AdminPageProps
           <HiddenField name="redirect_to" value="/admin/branding" />
           {payload.brand.logoUrl ? (
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-muted)]/35 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                 Current Logo
               </p>
               <img
@@ -57,3 +57,4 @@ export default async function AdminBrandingPage({ searchParams }: AdminPageProps
     </AdminShell>
   );
 }
+

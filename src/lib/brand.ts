@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { fontPackToFontStacks } from "@/lib/font-registry";
 import { getThemePresetById } from "@/lib/theme";
 import {
   buildThemeCssVars,
@@ -10,6 +11,7 @@ import type { BrandConfig } from "@/types/site";
 // The admin can persist matching values to Supabase, but this config remains the fallback.
 const defaultThemePreset = getThemePresetById();
 const defaultLegacyColors = themeTokensToLegacyFields(defaultThemePreset.colors);
+const defaultFontStacks = fontPackToFontStacks(defaultThemePreset.fonts);
 
 export const brandConfig: BrandConfig = {
   businessName: "Gresa's Cafe",
@@ -41,8 +43,8 @@ export const brandConfig: BrandConfig = {
   primaryColor: defaultLegacyColors.primaryColor,
   secondaryColor: defaultLegacyColors.secondaryColor,
   accentColor: defaultLegacyColors.accentColor,
-  headingFont: `'${defaultThemePreset.fonts.heading}', ${defaultThemePreset.fonts.headingFallback}`,
-  bodyFont: `'${defaultThemePreset.fonts.body}', ${defaultThemePreset.fonts.bodyFallback}`,
+  headingFont: defaultFontStacks.heading,
+  bodyFont: defaultFontStacks.body,
 };
 
 export function buildBrandCssVariables(brand: BrandConfig) {

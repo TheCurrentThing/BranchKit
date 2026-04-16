@@ -13,7 +13,7 @@ export function TestimonialsSection({
   return (
     <section className="border-b border-[var(--color-border)] bg-[var(--color-background)] px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brand-primary)]">
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
           Testimonials
         </p>
         <h2 className="mt-2 font-heading text-4xl text-[var(--color-foreground)]">
@@ -26,7 +26,7 @@ export function TestimonialsSection({
                 <p className="text-base leading-relaxed text-[var(--color-foreground)]/78">
                   "{testimonial.quote}"
                 </p>
-                <p className="mt-4 text-sm font-semibold text-[var(--brand-primary)]">
+                <p className="mt-4 text-sm font-semibold text-[var(--color-primary)]">
                   {testimonial.author}
                 </p>
               </CardContent>
@@ -37,3 +37,4 @@ export function TestimonialsSection({
     </section>
   );
 }
+

@@ -28,7 +28,7 @@ export function SetupWizardSteps({ currentStep }: { currentStep: string }) {
               className={[
                 "rounded-2xl border px-4 py-3 text-sm transition",
                 active
-                  ? "border-[var(--brand-primary)] bg-[color:rgba(165,60,47,0.08)]"
+                  ? "border-[var(--color-primary)] bg-[color:rgba(165,60,47,0.08)]"
                   : "border-[var(--color-border)] bg-[var(--color-muted)]/35 hover:bg-[var(--color-muted)]/55",
               ].join(" ")}
             >
@@ -45,3 +45,4 @@ export function SetupWizardSteps({ currentStep }: { currentStep: string }) {
     </Card>
   );
 }
+

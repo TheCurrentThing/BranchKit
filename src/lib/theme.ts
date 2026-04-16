@@ -1,3 +1,5 @@
+import type { FontKey } from "@/lib/font-registry";
+
 export type ThemeTokens = {
   background: string;
   surface: string;
@@ -20,10 +22,8 @@ export type ThemeTokens = {
 };
 
 export type FontPack = {
-  heading: string;
-  body: string;
-  headingFallback: string;
-  bodyFallback: string;
+  heading: FontKey;
+  body: FontKey;
   label: string;
 };
 
@@ -55,17 +55,13 @@ export type ThemePreset = {
 
 export const FONT_PACKS: Record<string, FontPack> = {
   classicSerif: {
-    heading: "Playfair Display",
-    body: "Inter",
-    headingFallback: "serif",
-    bodyFallback: "sans-serif",
+    heading: "playfair-display",
+    body: "inter",
     label: "Classic Serif + Clean Sans",
   },
   editorialWarm: {
-    heading: "Cormorant Garamond",
-    body: "Inter",
-    headingFallback: "serif",
-    bodyFallback: "sans-serif",
+    heading: "cormorant-garamond",
+    body: "inter",
     label: "Editorial Warm",
   },
 };
@@ -147,10 +143,8 @@ export const THEME_PRESETS: ThemePreset[] = [
       "Bright citrus warmth and airy neutrals for a lively morning crowd.",
     recommendedFor: ["brunch spots", "breakfast cafes", "daytime eateries"],
     fonts: {
-      heading: "DM Sans",
-      body: "Inter",
-      headingFallback: "sans-serif",
-      bodyFallback: "sans-serif",
+      heading: "dm-sans",
+      body: "inter",
       label: "Bright Modern Sans",
     },
     patterns: {
@@ -194,10 +188,8 @@ export const THEME_PRESETS: ThemePreset[] = [
       "urban fast casual",
     ],
     fonts: {
-      heading: "Bebas Neue",
-      body: "Inter",
-      headingFallback: "sans-serif",
-      bodyFallback: "sans-serif",
+      heading: "bebas-neue",
+      body: "inter",
       label: "Bold Street",
     },
     patterns: {
@@ -241,10 +233,8 @@ export const THEME_PRESETS: ThemePreset[] = [
       "artisan food spots",
     ],
     fonts: {
-      heading: "Merriweather",
-      body: "Inter",
-      headingFallback: "serif",
-      bodyFallback: "sans-serif",
+      heading: "merriweather",
+      body: "inter",
       label: "Rustic Editorial",
     },
     patterns: {
@@ -287,10 +277,8 @@ export const THEME_PRESETS: ThemePreset[] = [
       "fresh food brands",
     ],
     fonts: {
-      heading: "Sora",
-      body: "Inter",
-      headingFallback: "sans-serif",
-      bodyFallback: "sans-serif",
+      heading: "sora",
+      body: "inter",
       label: "Clean Modern",
     },
     patterns: {
@@ -334,10 +322,8 @@ export const THEME_PRESETS: ThemePreset[] = [
       "casual dining",
     ],
     fonts: {
-      heading: "Lora",
-      body: "Inter",
-      headingFallback: "serif",
-      bodyFallback: "sans-serif",
+      heading: "lora",
+      body: "inter",
       label: "Soft Editorial",
     },
     patterns: {
@@ -380,10 +366,8 @@ export const THEME_PRESETS: ThemePreset[] = [
       "urban cafes",
     ],
     fonts: {
-      heading: "Sora",
-      body: "Inter",
-      headingFallback: "sans-serif",
-      bodyFallback: "sans-serif",
+      heading: "sora",
+      body: "inter",
       label: "Modern Contrast",
     },
     patterns: {
@@ -426,10 +410,8 @@ export const THEME_PRESETS: ThemePreset[] = [
       "modern restaurants",
     ],
     fonts: {
-      heading: "Playfair Display",
-      body: "Inter",
-      headingFallback: "serif",
-      bodyFallback: "sans-serif",
+      heading: "playfair-display",
+      body: "inter",
       label: "Refined Editorial",
     },
     patterns: {

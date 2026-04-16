@@ -13,6 +13,10 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { StickyMobileBar } from "@/components/layout/StickyMobileBar";
 import { buildBrandCssVariables } from "@/lib/brand";
+import {
+  fontPackToFontStacks,
+  getBrandFontVariableClassNames,
+} from "@/lib/font-registry";
 import { getSitePayload } from "@/lib/queries";
 import { getThemePresetById, type ThemeTokens } from "@/lib/theme";
 import { parseThemeTokens, resolveTheme, themeTokensToLegacyFields } from "@/lib/theme-utils";
@@ -55,6 +59,7 @@ function applyBrandPreview(
       themeTokens: parsedThemeTokens ?? payload.brand.themeTokens,
     });
     const presetFonts = getThemePresetById(resolvedTheme.id).fonts;
+    const fontStacks = fontPackToFontStacks(presetFonts);
     const legacyColors = themeTokensToLegacyFields(resolvedTheme.resolvedColors);
 
     return {
@@ -77,8 +82,8 @@ function applyBrandPreview(
       primaryColor: legacyColors.primaryColor,
       secondaryColor: legacyColors.secondaryColor,
       accentColor: legacyColors.accentColor,
-      headingFont: `'${presetFonts.heading}', ${presetFonts.headingFallback}`,
-      bodyFont: `'${presetFonts.body}', ${presetFonts.bodyFallback}`,
+      headingFont: fontStacks.heading,
+      bodyFont: fontStacks.body,
     };
   } catch {
     return payload.brand;
@@ -88,9 +93,16 @@ function applyBrandPreview(
 export default async function PreviewPage({ searchParams }: PreviewPageProps) {
   const payload = await getSitePayload();
   const previewBrand = applyBrandPreview(payload, getPreviewParam(searchParams));
+  const previewFontClassNames = getBrandFontVariableClassNames(
+    previewBrand,
+    getThemePresetById(previewBrand.themePresetId).fonts,
+  );
 
   return (
-    <div className="min-h-screen pb-24 md:pb-0" style={buildBrandCssVariables(previewBrand)}>
+    <div
+      className={`${previewFontClassNames} min-h-screen pb-24 md:pb-0`}
+      style={buildBrandCssVariables(previewBrand)}
+    >
       <LocalBusinessJsonLd brand={previewBrand} hours={payload.hours} />
       <div className="sticky top-0 z-50">
         <AnnouncementBar settings={payload.settings} />
@@ -118,10 +130,18 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
           title={payload.homePage.featuredMenuTitle}
           intro={payload.homePage.featuredMenuIntro}
         />
-        <MenuPreviewSection categories={payload.menuCategories} />
+        <MenuPreviewSection
+          categories={payload.menuCategories}
+          title={payload.homePage.menuPreviewTitle}
+          subtitle={payload.homePage.menuPreviewSubtitle}
+        />
         <AboutSection about={payload.aboutPage} />
         {payload.features.showGallery ? (
-          <GallerySection images={payload.galleryImages} />
+          <GallerySection
+            images={payload.galleryImages}
+            title={payload.homePage.galleryTitle}
+            subtitle={payload.homePage.gallerySubtitle}
+          />
         ) : null}
         {payload.features.showTestimonials ? (
           <TestimonialsSection testimonials={payload.testimonials} />
@@ -129,7 +149,8 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
         <ContactSection
           brand={previewBrand}
           hours={payload.hours}
-          features={payload.features}
+          title={payload.homePage.contactTitle}
+          subtitle={payload.homePage.contactSubtitle}
         />
       </main>
       <SiteFooter brand={previewBrand} hours={payload.hours} />

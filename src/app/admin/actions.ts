@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { fontPackToFontStacks } from "@/lib/font-registry";
 import {
   parseThemeTokens,
   resolveTheme,
@@ -698,6 +699,12 @@ async function getHomepageContentBase() {
       hero_image_url: payload.homePage.heroImageUrl ?? null,
       quick_info_hours_label: payload.settings.quickInfoHoursLabel,
       ordering_notice: payload.settings.orderingNotice || null,
+      gallery_title: payload.homePage.galleryTitle,
+      gallery_subtitle: payload.homePage.gallerySubtitle || null,
+      menu_preview_title: payload.homePage.menuPreviewTitle,
+      menu_preview_subtitle: payload.homePage.menuPreviewSubtitle || null,
+      contact_title: payload.homePage.contactTitle,
+      contact_subtitle: payload.homePage.contactSubtitle || null,
       about_title: payload.aboutPage.title,
       about_body: payload.aboutPage.body,
     },
@@ -977,11 +984,12 @@ export async function saveBrandingAction(formData: FormData) {
       });
   const legacyTheme = themeTokensToLegacyFields(resolvedTheme.resolvedColors);
   const savedThemeMode = hasThemeSubmission ? themeMode : "custom";
+  const resolvedFontStacks = fontPackToFontStacks(resolvedTheme.fonts);
   const headingFontValue = hasThemeSubmission
-    ? `'${resolvedTheme.fonts.heading}', ${resolvedTheme.fonts.headingFallback}`
+    ? resolvedFontStacks.heading
     : readRequiredString(formData, "heading_font", "Heading font");
   const bodyFontValue = hasThemeSubmission
-    ? `'${resolvedTheme.fonts.body}', ${resolvedTheme.fonts.bodyFallback}`
+    ? resolvedFontStacks.body
     : readRequiredString(formData, "body_font", "Body font");
 
   let uploadedLogoUrl: string | null = null;
@@ -1122,6 +1130,12 @@ export async function saveHomepageContentAction(formData: FormData) {
         "Quick hours summary",
       ),
       ordering_notice: readOptionalString(formData, "ordering_notice"),
+      gallery_title: readOptionalString(formData, "gallery_title"),
+      gallery_subtitle: readOptionalString(formData, "gallery_subtitle"),
+      menu_preview_title: readOptionalString(formData, "menu_preview_title"),
+      menu_preview_subtitle: readOptionalString(formData, "menu_preview_subtitle"),
+      contact_title: readOptionalString(formData, "contact_title"),
+      contact_subtitle: readOptionalString(formData, "contact_subtitle"),
       about_title: readRequiredString(formData, "about_title", "About title"),
       about_body: readParagraphs(formData, "about_body"),
     },

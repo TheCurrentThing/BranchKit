@@ -79,7 +79,7 @@ export function BrandingThemeForm({
             value={businessName}
             onChange={(event) => setBusinessName(event.target.value)}
             required
-            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--brand-primary)]"
+            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]"
           />
         </label>
         <label className="block space-y-1.5">
@@ -91,7 +91,7 @@ export function BrandingThemeForm({
             value={tagline}
             onChange={(event) => setTagline(event.target.value)}
             required
-            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--brand-primary)]"
+            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]"
           />
         </label>
         <label className="block space-y-1.5">
@@ -102,7 +102,7 @@ export function BrandingThemeForm({
             name="logo_url"
             defaultValue={initialBrand.logoUrl ?? ""}
             placeholder="https://..."
-            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--brand-primary)]"
+            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]"
           />
         </label>
         <label className="block space-y-1.5">
@@ -113,7 +113,7 @@ export function BrandingThemeForm({
             name="logo_file"
             type="file"
             accept=".png,.jpg,.jpeg,.webp,.svg"
-            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-700 outline-none transition file:mr-4 file:rounded-xl file:border-0 file:bg-[var(--brand-primary)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+            className="w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-700 outline-none transition file:mr-4 file:rounded-xl file:border-0 file:bg-[var(--color-primary)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
           />
         </label>
       </div>
@@ -202,3 +202,4 @@ export function BrandingThemeForm({
     </div>
   );
 }
+

@@ -41,7 +41,7 @@ export function MenuSectionList({
     <section className="rounded-3xl border border-[var(--color-border)] bg-white/86 shadow-panel">
       <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] px-5 py-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
             Menu Sections
           </p>
           <p className="mt-1 text-sm text-[var(--color-foreground)]/62">
@@ -49,7 +49,7 @@ export function MenuSectionList({
           </p>
         </div>
         <details className="relative">
-          <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full bg-[var(--brand-primary)] text-xl font-semibold text-white shadow-sm">
+          <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full bg-[var(--color-primary)] text-xl font-semibold text-white shadow-sm">
             +
           </summary>
           <div className="absolute right-0 top-12 z-20 w-[320px] rounded-3xl border border-[var(--color-border)] bg-white p-4 shadow-xl">
@@ -94,7 +94,7 @@ export function MenuSectionList({
                 className={[
                   "block rounded-2xl border px-4 py-3 transition",
                   isSelected
-                    ? "border-[var(--brand-primary)] bg-[color:rgba(165,60,47,0.08)]"
+                    ? "border-[var(--color-primary)] bg-[color:rgba(165,60,47,0.08)]"
                     : "border-[var(--color-border)] bg-[var(--color-muted)]/20 hover:bg-[var(--color-muted)]/42",
                 ].join(" ")}
               >
@@ -103,7 +103,7 @@ export function MenuSectionList({
                     <p className="truncate font-semibold text-[var(--color-foreground)]">
                       {category.name}
                     </p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                       {category.items.length} items - {getServiceWindowLabel(category.serviceWindow)}
                     </p>
                   </div>
@@ -130,3 +130,4 @@ export function MenuSectionList({
     </section>
   );
 }
+

@@ -22,7 +22,7 @@ export function MenuItemListPanel({
     <section className="rounded-3xl border border-[var(--color-border)] bg-white/86 shadow-panel">
       <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] px-5 py-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
             Items
           </p>
           <p className="mt-1 text-sm text-[var(--color-foreground)]/62">
@@ -31,7 +31,7 @@ export function MenuItemListPanel({
         </div>
         <Link
           href={`/admin/menu?category=${category.id}&item=new`}
-          className="inline-flex items-center justify-center rounded-xl bg-[var(--brand-primary)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-95"
+          className="inline-flex items-center justify-center rounded-xl bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-95"
         >
           Add Item
         </Link>
@@ -49,7 +49,7 @@ export function MenuItemListPanel({
                 className={[
                   "block rounded-2xl border px-4 py-3 transition",
                   isSelected
-                    ? "border-[var(--brand-primary)] bg-[color:rgba(165,60,47,0.08)]"
+                    ? "border-[var(--color-primary)] bg-[color:rgba(165,60,47,0.08)]"
                     : "border-[var(--color-border)] bg-[var(--color-muted)]/20 hover:bg-[var(--color-muted)]/42",
                 ].join(" ")}
               >
@@ -58,7 +58,7 @@ export function MenuItemListPanel({
                     <p className="truncate font-semibold text-[var(--color-foreground)]">
                       {item.name}
                     </p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                       ${item.price.toFixed(2)}
                       {item.isFeatured ? " - Featured" : ""}
                     </p>
@@ -93,3 +93,4 @@ export function MenuItemListPanel({
     </section>
   );
 }
+

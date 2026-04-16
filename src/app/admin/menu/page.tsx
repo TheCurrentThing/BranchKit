@@ -49,7 +49,7 @@ export default async function AdminMenuPage({ searchParams }: AdminPageProps) {
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-[var(--color-border)] bg-white/86 px-5 py-4 shadow-panel">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
             Menu Control Panel
           </p>
           <p className="mt-1 text-sm text-[var(--color-foreground)]/68">
@@ -85,3 +85,4 @@ export default async function AdminMenuPage({ searchParams }: AdminPageProps) {
     </AdminShell>
   );
 }
+

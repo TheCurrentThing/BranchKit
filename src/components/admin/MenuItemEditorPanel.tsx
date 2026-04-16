@@ -59,9 +59,9 @@ export function MenuItemEditorPanel({
   const itemIsSoldOut = item?.isSoldOut ?? false;
   const itemIsFeatured = item?.isFeatured ?? false;
   const baseFieldClassName =
-    "mt-1 w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--brand-primary)]";
+    "mt-1 w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]";
   const compactFieldClassName =
-    "mt-1 w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-right text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--brand-primary)]";
+    "mt-1 w-full rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-right text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[var(--color-primary)]";
   const toggleClassName =
     "flex items-center gap-2 rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-stone-900";
 
@@ -134,7 +134,7 @@ export function MenuItemEditorPanel({
                 name="is_active"
                 type="checkbox"
                 defaultChecked={itemIsActive}
-                className="h-4 w-4 accent-[var(--brand-primary)]"
+                className="h-4 w-4 accent-[var(--color-primary)]"
               />
               Show on site
             </label>
@@ -143,7 +143,7 @@ export function MenuItemEditorPanel({
                 name="is_sold_out"
                 type="checkbox"
                 defaultChecked={itemIsSoldOut}
-                className="h-4 w-4 accent-[var(--brand-primary)]"
+                className="h-4 w-4 accent-[var(--color-primary)]"
               />
               Sold out
             </label>
@@ -152,7 +152,7 @@ export function MenuItemEditorPanel({
                 name="is_featured"
                 type="checkbox"
                 defaultChecked={itemIsFeatured}
-                className="h-4 w-4 accent-[var(--brand-primary)]"
+                className="h-4 w-4 accent-[var(--color-primary)]"
               />
               Featured
             </label>
@@ -195,7 +195,7 @@ export function MenuItemEditorPanel({
           {item ? (
             <a
               href={`/admin/menu?category=${category.id}`}
-              className="inline-flex items-center justify-center rounded-xl border border-[var(--brand-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--brand-primary)] transition hover:bg-[color:rgba(165,60,47,0.08)]"
+              className="inline-flex items-center justify-center rounded-xl border border-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[color:rgba(165,60,47,0.08)]"
             >
               Done Editing
             </a>
@@ -217,3 +217,4 @@ export function MenuItemEditorPanel({
     </AdminCard>
   );
 }
+

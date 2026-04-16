@@ -46,7 +46,7 @@ export default async function AdminSpecialsPage({
         >
           {featuredSpecial ? (
             <div className="rounded-2xl border border-[var(--color-border)] bg-[color:rgba(165,60,47,0.08)] p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                 Featured Right Now
               </p>
               <p className="mt-2 text-2xl font-heading text-[var(--color-foreground)]">
@@ -55,7 +55,7 @@ export default async function AdminSpecialsPage({
               <p className="mt-2 text-sm text-[var(--color-foreground)]/72">
                 {featuredSpecial.description}
               </p>
-              <p className="mt-3 text-sm font-semibold text-[var(--brand-primary)]">
+              <p className="mt-3 text-sm font-semibold text-[var(--color-primary)]">
                 {featuredSpecial.price === null
                   ? featuredSpecial.label
                   : `${featuredSpecial.label} • $${featuredSpecial.price.toFixed(2)}`}
@@ -215,3 +215,4 @@ export default async function AdminSpecialsPage({
     </AdminShell>
   );
 }
+

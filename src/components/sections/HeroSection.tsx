@@ -14,9 +14,9 @@ export function HeroSection({
 }) {
   return (
     <section className="border-b border-[var(--color-border)] bg-[var(--color-background)]">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 md:grid-cols-[minmax(0,0.95fr)_minmax(320px,1.05fr)] md:items-center md:py-20 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 md:grid-cols-[minmax(0,0.95fr)_minmax(320px,1.05fr)] md:items-center md:py-24 sm:px-6 lg:px-8">
+        <div className="order-2 max-w-2xl md:order-1">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--color-primary)]">
             {settings.heroEyebrow}
           </p>
           <h1 className="mt-4 font-heading text-4xl leading-none text-[var(--color-foreground)] sm:text-5xl lg:text-6xl">
@@ -37,7 +37,7 @@ export function HeroSection({
             {getBusinessAddress(brand)}
           </p>
         </div>
-        <Card className="overflow-hidden bg-[var(--color-card)]">
+        <Card className="order-1 overflow-hidden bg-[var(--color-card)] md:order-2">
           <CardContent className="p-0">
             <img
               src={homePage.heroImageUrl}
@@ -50,3 +50,4 @@ export function HeroSection({
     </section>
   );
 }
+

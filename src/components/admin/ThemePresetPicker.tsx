@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  fontPackToFontStacks,
+  getFontVariableClassNamesForPack,
+} from "@/lib/font-registry";
 import { cn } from "@/lib/utils";
 import { THEME_PRESETS, type ThemePreset } from "@/lib/theme";
 
@@ -40,11 +44,16 @@ function ThemePresetCard({
   selected: boolean;
   onClick: () => void;
 }) {
+  const fontClassNames = getFontVariableClassNamesForPack(preset.fonts);
+  const fontStacks = fontPackToFontStacks(preset.fonts);
+
   return (
     <button
       type="button"
       onClick={onClick}
+      data-font-preview={preset.id}
       className={cn(
+        fontClassNames,
         "group relative w-full rounded-2xl border bg-white p-4 text-left shadow-sm transition-all",
         "hover:-translate-y-0.5 hover:shadow-md",
         selected
@@ -89,7 +98,7 @@ function ThemePresetCard({
         <div
           className="text-lg leading-tight"
           style={{
-            fontFamily: `'${preset.fonts.heading}', ${preset.fonts.headingFallback}`,
+            fontFamily: fontStacks.heading,
           }}
         >
           Hometown Cooking
@@ -98,7 +107,7 @@ function ThemePresetCard({
           className="mt-1 text-sm"
           style={{
             color: preset.colors.mutedText,
-            fontFamily: `'${preset.fonts.body}', ${preset.fonts.bodyFallback}`,
+            fontFamily: fontStacks.body,
           }}
         >
           Fresh meals, clear prices, easy updates.

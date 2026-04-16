@@ -32,7 +32,7 @@ export default async function MenuPage() {
                           {item.name}
                         </h3>
                         <span className="hidden flex-1 border-b border-dotted border-[var(--color-border)] md:block" />
-                        <span className="text-xl font-bold text-[var(--brand-primary)]">
+                        <span className="text-xl font-bold text-[var(--color-primary)]">
                           ${item.price.toFixed(2)}
                         </span>
                       </div>
@@ -49,3 +49,4 @@ export default async function MenuPage() {
     </section>
   );
 }
+

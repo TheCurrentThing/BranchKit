@@ -39,7 +39,7 @@ export function MenuCategoryPanel({
   return (
     <section className="rounded-3xl border border-[var(--color-border)] bg-white/86 shadow-panel">
       <div className="border-b border-[var(--color-border)] px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
           Selected Section
         </p>
         <h2 className="mt-1 font-heading text-2xl text-[var(--color-foreground)]">
@@ -108,3 +108,4 @@ export function MenuCategoryPanel({
     </section>
   );
 }
+
