@@ -3,7 +3,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { seedSitePayload } from "@/lib/seed";
-import { KITS, KitType } from "./kits";
+import { KITS } from "./kits";
+import { resolveKitIdentity } from "@/lib/kit-config";
+import type { KitCategory } from "@/types/kit";
 
 function slugify(value: string): string {
   return (
@@ -53,21 +55,34 @@ export async function signUpOnboardingAction(
 
 export async function createOnboardingBusiness(
   name: string,
-  kitType: KitType,
+  kitCategory: KitCategory,
   location: string
 ): Promise<{ error?: string; businessId?: string; slug?: string }> {
   const db = getAdminDb();
   if (!db) return { error: "Service not configured." };
 
-  const kit = KITS[kitType];
+  const kit = KITS[kitCategory];
   const seed = seedSitePayload;
   const baseSlug = slugify(name);
 
-  // Create business — retry once on slug collision
+  // Resolve family from category for storage
+  const { family: kitFamily } = resolveKitIdentity({ kitCategory });
+
+  // Create business — retry once on slug collision.
+  // kit_type is set to the category value for backward compat with existing queries.
+  // kit_family + kit_category are the authoritative columns going forward.
   const tryInsert = (s: string) =>
     db
       .from("businesses")
-      .insert({ name, slug: s, is_active: true, site_status: "ready" })
+      .insert({
+        name,
+        slug: s,
+        is_active: true,
+        site_status: "ready",
+        kit_type: kitCategory,   // compat alias — mirrors kit_category
+        kit_family: kitFamily,
+        kit_category: kitCategory,
+      })
       .select("id, slug")
       .single();
 

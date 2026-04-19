@@ -3,17 +3,23 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ForkKnife,
-  Storefront,
-  Palette,
-  Wrench,
   ArrowRight,
+  Coffee,
   Eye,
   EyeSlash,
+  ForkKnife,
+  MapPin,
+  Palette,
+  Storefront,
+  Truck,
+  Wine,
+  Wrench,
 } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { signUpOnboardingAction, createOnboardingBusiness } from "./actions";
-import { KITS, KitType, KitDefinition } from "./kits";
+import { KITS, KitDefinition } from "./kits";
+import type { KitCategory, KitFamily } from "@/types/kit";
+import { FOOD_SERVICE_CATEGORIES } from "@/lib/kit-config";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,28 +30,51 @@ interface FlowData {
   password: string;
   businessName: string;
   location: string;
-  kitType: KitType;
+  kitCategory: KitCategory;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Kit icon map ─────────────────────────────────────────────────────────────
+
+const KIT_ICONS: Record<KitCategory, Icon> = {
+  cafe:       Coffee,
+  diner:      ForkKnife,
+  restaurant: Storefront,
+  pop_up:     MapPin,
+  food_truck: Truck,
+  bar:        Wine,
+  artist:     Palette,
+  trade:      Wrench,
+};
+
+// ─── Category groups for Step 3 display ──────────────────────────────────────
+
+type CategoryGroup = {
+  family: KitFamily;
+  label: string;
+  categories: KitCategory[];
+};
+
+const CATEGORY_GROUPS: CategoryGroup[] = [
+  {
+    family: "food_service",
+    label: "Food Service",
+    categories: [...FOOD_SERVICE_CATEGORIES],
+  },
+  {
+    family: "creative",
+    label: "Creative",
+    categories: ["artist"],
+  },
+  {
+    family: "services",
+    label: "Services",
+    categories: ["trade"],
+  },
+];
 
 const STEP_LABELS = ["Account", "Identity", "Kit", "Build"] as const;
 
-const KIT_ICONS: Record<KitType, Icon> = {
-  restaurant: ForkKnife,
-  food_truck: Storefront,
-  artist: Palette,
-  trade: Wrench,
-};
-
-const BUSINESS_TYPES: Array<{ value: KitType; label: string }> = [
-  { value: "restaurant", label: "Restaurant" },
-  { value: "food_truck", label: "Food Truck" },
-  { value: "artist", label: "Artist / Creator" },
-  { value: "trade", label: "Trade / Service" },
-];
-
-// ─── Shared utilities ─────────────────────────────────────────────────────────
+// ─── Shared UI components ─────────────────────────────────────────────────────
 
 function StepBadge({ text }: { text: string }) {
   return (
@@ -258,7 +287,7 @@ function IdentityStep({
       <div className="panel" style={{ padding: "28px 28px 24px" }}>
         <StepBadge text="Step 2 / 4 — Identity" />
         <PanelTitle>Tell us about your business.</PanelTitle>
-        <PanelSub>This shapes your site&apos;s default content and structure.</PanelSub>
+        <PanelSub>Your name and location shape your site&apos;s default content.</PanelSub>
 
         <form onSubmit={handleNext} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div>
@@ -290,51 +319,6 @@ function IdentityStep({
             />
           </div>
 
-          <div>
-            <FieldLabel>Business Type</FieldLabel>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {BUSINESS_TYPES.map((type) => {
-                const Icon = KIT_ICONS[type.value];
-                const selected = data.kitType === type.value;
-                return (
-                  <button
-                    key={type.value}
-                    type="button"
-                    onClick={() => update({ kitType: type.value })}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      padding: "9px 12px",
-                      borderRadius: 7,
-                      border: `1px solid ${selected ? "rgba(217,119,6,0.35)" : "var(--admin-panel-border)"}`,
-                      background: selected ? "rgba(217,119,6,0.08)" : "var(--admin-panel-bg)",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      transition: "background 0.12s, border-color 0.12s",
-                    }}
-                  >
-                    <Icon
-                      size={13}
-                      weight={selected ? "bold" : "regular"}
-                      style={{ color: selected ? "#d97706" : "var(--admin-text-muted)", flexShrink: 0 }}
-                    />
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: selected ? 600 : 400,
-                        color: selected ? "var(--admin-text)" : "var(--admin-text-muted)",
-                        lineHeight: 1.3,
-                      }}
-                    >
-                      {type.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {error && <ErrorBanner message={error} />}
 
           <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
@@ -352,7 +336,7 @@ function IdentityStep({
   );
 }
 
-// ─── Step 3: Kit Selection ────────────────────────────────────────────────────
+// ─── Step 3: Kit / Category Selection ────────────────────────────────────────
 
 function KitStep({
   data,
@@ -365,101 +349,120 @@ function KitStep({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const kits = Object.values(KITS) as KitDefinition[];
-
   return (
-    <div style={{ width: "100%", maxWidth: 560 }}>
+    <div style={{ width: "100%", maxWidth: 600 }}>
       <div className="panel" style={{ padding: "28px 28px 24px" }}>
         <StepBadge text="Step 3 / 4 — Kit" />
-        <PanelTitle>Choose your site kit.</PanelTitle>
-        <PanelSub>Each kit activates different modules. Customize everything after launch.</PanelSub>
+        <PanelTitle>What kind of business are you?</PanelTitle>
+        <PanelSub>
+          This activates the right modules and seeds your default content. You can customize everything after launch.
+        </PanelSub>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: 10,
-            marginBottom: 20,
-          }}
-        >
-          {kits.map((kit) => {
-            const Icon = KIT_ICONS[kit.type];
-            const selected = data.kitType === kit.type;
-            return (
-              <button
-                key={kit.type}
-                type="button"
-                onClick={() => update({ kitType: kit.type })}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 20 }}>
+          {CATEGORY_GROUPS.map((group) => (
+            <div key={group.family}>
+              <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 9,
-                  padding: "14px",
-                  borderRadius: 8,
-                  border: `1px solid ${selected ? "rgba(217,119,6,0.32)" : "var(--admin-panel-border)"}`,
-                  background: selected ? "rgba(217,119,6,0.07)" : "var(--admin-panel-bg)",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "background 0.12s, border-color 0.12s",
-                  position: "relative",
+                  fontSize: 9,
+                  fontWeight: 700,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "var(--admin-text-muted)",
+                  marginBottom: 8,
+                  paddingLeft: 2,
                 }}
               >
-                {selected && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 10,
-                      right: 10,
-                      width: 6,
-                      height: 6,
-                      borderRadius: "50%",
-                      background: "#d97706",
-                    }}
-                  />
-                )}
-                <Icon
-                  size={18}
-                  weight={selected ? "duotone" : "regular"}
-                  style={{ color: selected ? "#d97706" : "var(--admin-text-muted)" }}
-                />
-                <div>
-                  <div
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: selected ? "var(--admin-text)" : "var(--admin-text-muted)",
-                      marginBottom: 3,
-                    }}
-                  >
-                    {kit.label}
-                  </div>
-                  <div style={{ fontSize: 11, color: "var(--admin-text-muted)", lineHeight: 1.45 }}>
-                    {kit.description}
-                  </div>
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                  {kit.tags.map((tag) => (
-                    <span
-                      key={tag}
+                {group.label}
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: group.categories.length > 2 ? "repeat(3, 1fr)" : "repeat(2, 1fr)",
+                  gap: 8,
+                }}
+              >
+                {group.categories.map((category) => {
+                  const kit: KitDefinition = KITS[category];
+                  const IconComponent = KIT_ICONS[category];
+                  const selected = data.kitCategory === category;
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => update({ kitCategory: category })}
                       style={{
-                        fontSize: 9,
-                        fontWeight: 600,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        padding: "2px 6px",
-                        borderRadius: 4,
-                        background: selected ? "rgba(217,119,6,0.1)" : "rgba(255,255,255,0.04)",
-                        color: selected ? "#d97706" : "var(--admin-text-muted)",
-                        border: `1px solid ${selected ? "rgba(217,119,6,0.2)" : "var(--admin-panel-border)"}`,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 8,
+                        padding: "12px 14px",
+                        borderRadius: 8,
+                        border: `1px solid ${selected ? "rgba(217,119,6,0.32)" : "var(--admin-panel-border)"}`,
+                        background: selected ? "rgba(217,119,6,0.07)" : "var(--admin-panel-bg)",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        transition: "background 0.12s, border-color 0.12s",
+                        position: "relative",
                       }}
                     >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </button>
-            );
-          })}
+                      {selected && (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 9,
+                            right: 9,
+                            width: 6,
+                            height: 6,
+                            borderRadius: "50%",
+                            background: "#d97706",
+                          }}
+                        />
+                      )}
+                      <IconComponent
+                        size={16}
+                        weight={selected ? "duotone" : "regular"}
+                        style={{ color: selected ? "#d97706" : "var(--admin-text-muted)" }}
+                      />
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: selected ? "var(--admin-text)" : "var(--admin-text-muted)",
+                            marginBottom: 2,
+                          }}
+                        >
+                          {kit.label}
+                        </div>
+                        <div style={{ fontSize: 10.5, color: "var(--admin-text-muted)", lineHeight: 1.4 }}>
+                          {kit.description}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+                        {kit.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            style={{
+                              fontSize: 8.5,
+                              fontWeight: 600,
+                              letterSpacing: "0.08em",
+                              textTransform: "uppercase",
+                              padding: "2px 5px",
+                              borderRadius: 4,
+                              background: selected ? "rgba(217,119,6,0.1)" : "rgba(255,255,255,0.04)",
+                              color: selected ? "#d97706" : "var(--admin-text-muted)",
+                              border: `1px solid ${selected ? "rgba(217,119,6,0.2)" : "var(--admin-panel-border)"}`,
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div style={{ display: "flex", gap: 8 }}>
@@ -512,7 +515,7 @@ function GenerateStep({
   data: FlowData;
   onDone: () => void;
 }) {
-  const kit = KITS[data.kitType];
+  const kit = KITS[data.kitCategory];
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [animComplete, setAnimComplete] = useState(false);
   const [apiResult, setApiResult] = useState<{ slug?: string; error?: string } | null>(null);
@@ -526,7 +529,7 @@ function GenerateStep({
     calledRef.current = true;
 
     // Fire API call immediately
-    createOnboardingBusiness(data.businessName, data.kitType, data.location).then(
+    createOnboardingBusiness(data.businessName, data.kitCategory, data.location).then(
       (result) => setApiResult(result)
     );
 
@@ -690,7 +693,7 @@ export function OnboardingFlow() {
     password: "",
     businessName: "",
     location: "",
-    kitType: "restaurant",
+    kitCategory: "restaurant",
   });
 
   function update(partial: Partial<FlowData>) {

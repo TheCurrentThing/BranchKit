@@ -1,9 +1,9 @@
 import "server-only";
 import { cache } from "react";
 import { createSupabaseAdminClient, isSupabaseConfigured } from "@/lib/supabase";
-import { toKitType } from "@/lib/kit-config";
+import { toKitType, toKitCategory, toKitFamily, resolveKitIdentity } from "@/lib/kit-config";
 import { toRendererType } from "@/lib/renderer-config";
-import type { KitType } from "@/types/kit";
+import type { KitType, KitCategory, KitFamily, KitIdentity } from "@/types/kit";
 import type { RendererType } from "@/types/renderer";
 
 export type SiteStatus = "draft" | "ready" | "live" | "paused";
@@ -14,9 +14,38 @@ export type BusinessRow = {
   name: string;
   is_active: boolean;
   site_status: SiteStatus;
+  // kit_type is the legacy column kept for backward compat.
+  // kit_category + kit_family are the authoritative columns (post migration 009).
   kit_type: KitType;
+  kit_category: KitCategory;
+  kit_family: KitFamily;
   renderer_type: RendererType;
 };
+
+type RawBusiness = Omit<BusinessRow, "kit_type" | "kit_category" | "kit_family" | "renderer_type"> & {
+  kit_type: string;
+  kit_category: string | null;
+  kit_family: string | null;
+  renderer_type: string;
+};
+
+function normalizeBusinessRow(raw: RawBusiness): BusinessRow {
+  const identity: KitIdentity = resolveKitIdentity({
+    kitFamily:    raw.kit_family,
+    kitCategory:  raw.kit_category,
+    legacyKitType: raw.kit_type,
+  });
+  return {
+    ...raw,
+    kit_type:      identity.category, // compat alias
+    kit_category:  identity.category,
+    kit_family:    identity.family,
+    renderer_type: toRendererType(raw.renderer_type),
+  };
+}
+
+const BUSINESS_SELECT =
+  "id, slug, name, is_active, site_status, kit_type, kit_category, kit_family, renderer_type";
 
 /**
  * Resolve a business by its public slug.
@@ -33,11 +62,9 @@ export const getBusinessBySlug = cache(
     const client = createSupabaseAdminClient();
     if (!client) return null;
 
-    type RawBusiness = Omit<BusinessRow, "kit_type" | "renderer_type"> & { kit_type: string; renderer_type: string };
-
     let query = client
       .from("businesses")
-      .select("id, slug, name, is_active, site_status, kit_type, renderer_type")
+      .select(BUSINESS_SELECT)
       .eq("slug", slug)
       .eq("is_active", true);
 
@@ -47,7 +74,7 @@ export const getBusinessBySlug = cache(
 
     const { data } = await query.maybeSingle<RawBusiness>();
     if (!data) return null;
-    return { ...data, kit_type: toKitType(data.kit_type), renderer_type: toRendererType(data.renderer_type) };
+    return normalizeBusinessRow(data);
   },
 );
 
@@ -62,11 +89,9 @@ export const getBusinessByDomain = cache(
     const client = createSupabaseAdminClient();
     if (!client) return null;
 
-    type RawBusiness = Omit<BusinessRow, "kit_type" | "renderer_type"> & { kit_type: string; renderer_type: string };
-
     const { data } = await client
       .from("business_domains")
-      .select("businesses!inner(id, slug, name, is_active, site_status, kit_type, renderer_type)")
+      .select(`businesses!inner(${BUSINESS_SELECT})`)
       .eq("domain", domain)
       .eq("status", "active")
       .maybeSingle<{ businesses: RawBusiness }>();
@@ -75,7 +100,7 @@ export const getBusinessByDomain = cache(
     if (!raw || !raw.is_active || raw.site_status !== "live") {
       return null;
     }
-    return { ...raw, kit_type: toKitType(raw.kit_type), renderer_type: toRendererType(raw.renderer_type) };
+    return normalizeBusinessRow(raw);
   },
 );
 
@@ -143,37 +168,58 @@ export const getCurrentAdminBusinessId = cache(async (): Promise<string> => {
 
 /**
  * Get the kit_type for the current admin business.
- * Cached per request. Returns 'restaurant' as a safe fallback.
+ * Returns 'restaurant' as a safe fallback.
+ * kit_type is now a KitCategory alias — this remains for backward compat.
  */
 export const getCurrentAdminKitType = cache(async (): Promise<KitType> => {
   if (!isSupabaseConfigured()) return "restaurant";
-
   const client = createSupabaseAdminClient();
   if (!client) return "restaurant";
 
   const businessId = await getCurrentAdminBusinessId();
-
   const { data } = await client
     .from("businesses")
-    .select("kit_type")
+    .select("kit_category, kit_type")
     .eq("id", businessId)
-    .maybeSingle<{ kit_type: string }>();
+    .maybeSingle<{ kit_category: string | null; kit_type: string }>();
 
-  return toKitType(data?.kit_type);
+  // Prefer kit_category; fall back to kit_type for pre-migration rows
+  return toKitType(data?.kit_category ?? data?.kit_type);
+});
+
+/**
+ * Get the full KitIdentity (family + category) for the current admin business.
+ * Use this for new code that needs both family and category.
+ */
+export const getCurrentAdminKitIdentity = cache(async (): Promise<KitIdentity> => {
+  if (!isSupabaseConfigured()) return { family: "food_service", category: "restaurant" };
+  const client = createSupabaseAdminClient();
+  if (!client) return { family: "food_service", category: "restaurant" };
+
+  const businessId = await getCurrentAdminBusinessId();
+  const { data } = await client
+    .from("businesses")
+    .select("kit_family, kit_category, kit_type")
+    .eq("id", businessId)
+    .maybeSingle<{ kit_family: string | null; kit_category: string | null; kit_type: string }>();
+
+  return resolveKitIdentity({
+    kitFamily:     data?.kit_family,
+    kitCategory:   data?.kit_category,
+    legacyKitType: data?.kit_type,
+  });
 });
 
 /**
  * Get the renderer_type for the current admin business.
- * Cached per request. Returns 'standard' as a safe fallback.
+ * Returns 'standard' as a safe fallback.
  */
 export const getCurrentAdminRendererType = cache(async (): Promise<RendererType> => {
   if (!isSupabaseConfigured()) return "standard";
-
   const client = createSupabaseAdminClient();
   if (!client) return "standard";
 
   const businessId = await getCurrentAdminBusinessId();
-
   const { data } = await client
     .from("businesses")
     .select("renderer_type")
@@ -204,15 +250,24 @@ export async function createBusiness({
   const client = createSupabaseAdminClient();
   if (!client) throw new Error("Supabase client could not be created.");
 
-  type RawBusiness = Omit<BusinessRow, "kit_type" | "renderer_type"> & { kit_type: string; renderer_type: string };
+  const identity = resolveKitIdentity({ kitCategory: kitType });
 
   const { data, error } = await client
     .from("businesses")
-    .insert({ name, slug, is_active: true, site_status: "draft", kit_type: kitType, renderer_type: rendererType })
-    .select("id, slug, name, is_active, site_status, kit_type, renderer_type")
+    .insert({
+      name,
+      slug,
+      is_active: true,
+      site_status: "draft",
+      kit_type:     identity.category, // compat alias
+      kit_category: identity.category,
+      kit_family:   identity.family,
+      renderer_type: rendererType,
+    })
+    .select(BUSINESS_SELECT)
     .single<RawBusiness>();
 
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Business could not be created.");
-  return { ...data, kit_type: toKitType(data.kit_type), renderer_type: toRendererType(data.renderer_type) };
+  return normalizeBusinessRow(data);
 }
