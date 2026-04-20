@@ -30,11 +30,11 @@ export default async function PreviewSiteLayout({
       <PageViewTracker />
       <div className="sticky top-0 z-50">
         <AnnouncementBar settings={settings} />
-        <SiteHeader brand={brand} basePath="/preview" />
+        <SiteHeader brand={brand} basePath="/preview" kitCategory={payload.kitCategory} />
       </div>
       <main>{children}</main>
       <SiteFooter brand={brand} hours={hours} />
-      <StickyMobileBar brand={brand} features={features} basePath="/preview" />
+      <StickyMobileBar brand={brand} features={features} basePath="/preview" kitCategory={payload.kitCategory} />
     </div>
   );
 }

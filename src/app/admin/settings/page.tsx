@@ -143,6 +143,9 @@ export default async function AdminSettingsPage({ searchParams }: AdminPageProps
               <ModuleIndexItem modules={modules} moduleKey="branding" label="Branding" href="/admin/branding" />
               <ModuleIndexItem modules={modules} moduleKey="menu" label="Menu" href="/admin/menu" />
               <ModuleIndexItem modules={modules} moduleKey="specials" label="Specials" href="/admin/specials" />
+              <ModuleIndexItem modules={modules} moduleKey="offerings" label="Offerings" href="/admin/offerings" />
+              <ModuleIndexItem modules={modules} moduleKey="testimonials" label="Testimonials" href="/admin/testimonials" />
+              <ModuleIndexItem modules={modules} moduleKey="service_areas" label="Service Areas" href="/admin/service-areas" />
               <ModuleIndexItem modules={modules} moduleKey="hours" label="Hours" href="/admin/hours" />
               <ModuleIndexItem modules={modules} moduleKey="photos" label="Photos" href="/admin/photos" />
               <ModuleIndexItem modules={modules} moduleKey="contact" label="Contact" href="/admin/contact" />
@@ -229,7 +232,7 @@ export default async function AdminSettingsPage({ searchParams }: AdminPageProps
             <HiddenField name="redirect_to" value="/admin/settings" />
 
             {/* ── Content Sections ────────────────────────────────────────── */}
-            {(modules.specials || modules.photos) && (
+            {(modules.specials || modules.photos || modules.testimonials) && (
               <ModulePanel
                 eyebrow="Content"
                 title="Content Sections"
@@ -258,18 +261,22 @@ export default async function AdminSettingsPage({ searchParams }: AdminPageProps
                     <HiddenField name="show_gallery" value={features.showGallery ? "on" : ""} />
                   )}
 
-                  <ToggleRow
-                    name="show_testimonials"
-                    label="Show Testimonials"
-                    hint="Shows a testimonials section if any are configured."
-                    defaultChecked={features.showTestimonials}
-                  />
+                  {modules.testimonials ? (
+                    <ToggleRow
+                      name="show_testimonials"
+                      label="Show Testimonials"
+                      hint="Shows the testimonials section if any testimonials are active."
+                      defaultChecked={features.showTestimonials}
+                    />
+                  ) : (
+                    <HiddenField name="show_testimonials" value={features.showTestimonials ? "on" : ""} />
+                  )}
                 </div>
               </ModulePanel>
             )}
 
             {/* Preserve hidden when content panel not shown */}
-            {!modules.specials && !modules.photos && (
+            {!modules.specials && !modules.photos && !modules.testimonials && (
               <>
                 <HiddenField name="show_specials" value={features.showSpecials ? "on" : ""} />
                 <HiddenField name="show_gallery" value={features.showGallery ? "on" : ""} />
@@ -340,16 +347,20 @@ export default async function AdminSettingsPage({ searchParams }: AdminPageProps
               description="Navigation and action elements that appear across the site."
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <ToggleRow
-                  name="show_online_ordering"
-                  label="Online Ordering Links"
-                  hint="Shows ordering CTAs in the header and sticky bar."
-                  defaultChecked={features.showOnlineOrdering}
-                />
+                {modules.menu ? (
+                  <ToggleRow
+                    name="show_online_ordering"
+                    label="Online Ordering Links"
+                    hint="Shows online ordering CTAs in the header and sticky bar."
+                    defaultChecked={features.showOnlineOrdering}
+                  />
+                ) : (
+                  <HiddenField name="show_online_ordering" value={features.showOnlineOrdering ? "on" : ""} />
+                )}
                 <ToggleRow
                   name="show_sticky_mobile_bar"
                   label="Mobile Action Bar"
-                  hint="Sticky bottom bar on mobile with call, order, and map actions."
+                  hint="Sticky bottom bar on mobile with quick-action shortcuts."
                   defaultChecked={features.showStickyMobileBar}
                 />
               </div>

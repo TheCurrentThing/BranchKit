@@ -17,6 +17,7 @@ export default async function AdminHomepagePage() {
     >
       <HomepageEditorClient
         businessName={payload.brand.businessName}
+        kitFamily={payload.kitFamily}
         announcement={{
           title: payload.meta.announcementTitle ?? "",
           body: payload.meta.announcementBody ?? "",

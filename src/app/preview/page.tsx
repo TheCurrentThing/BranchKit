@@ -102,13 +102,13 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
     >
       <div className="sticky top-0 z-50">
         <AnnouncementBar settings={payload.settings} />
-        <SiteHeader brand={previewBrand} basePath="/preview" />
+        <SiteHeader brand={previewBrand} basePath="/preview" kitCategory={previewPayload.kitCategory} />
       </div>
       <main>
         <SiteRenderer payload={previewPayload} basePath="/preview" />
       </main>
       <SiteFooter brand={previewBrand} hours={payload.hours} />
-      <StickyMobileBar brand={previewBrand} features={payload.features} basePath="/preview" />
+      <StickyMobileBar brand={previewBrand} features={payload.features} basePath="/preview" kitCategory={previewPayload.kitCategory} />
     </div>
   );
 }

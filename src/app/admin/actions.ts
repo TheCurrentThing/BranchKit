@@ -1932,6 +1932,179 @@ export async function saveSetupMenuAction(formData: FormData) {
   }
 }
 
+// ─── OFFERINGS ────────────────────────────────────────────────────────────────
+
+function revalidateOfferings() {
+  revalidateAdminSection("/admin/offerings");
+}
+
+export async function saveOfferingAction(formData: FormData) {
+  const path = resolveRedirectPath(formData, "/admin/offerings");
+
+  try {
+    await getAdminClient(path);
+    const businessId = await getCurrentAdminBusinessId();
+
+    const id = readOptionalString(formData, "offering_id");
+
+    await saveRecord({
+      table: "service_offerings",
+      id,
+      values: {
+        business_id: businessId,
+        title: readRequiredString(formData, "title", "Offering title"),
+        short_description: readOptionalString(formData, "short_description"),
+        starting_price: readOptionalString(formData, "starting_price"),
+        is_featured: readCheckbox(formData, "is_featured"),
+        is_active: readCheckbox(formData, "is_active"),
+        sort_order: readSortOrder(formData),
+      },
+    });
+
+    revalidateOfferings();
+    redirectWithState(path, { status: "Offering saved." });
+  } catch (error) {
+    rethrowIfRedirectSignal(error);
+    redirectWithState(path, {
+      error: error instanceof Error ? error.message : "Unable to save offering.",
+    });
+  }
+}
+
+export async function deleteOfferingAction(formData: FormData) {
+  const path = resolveRedirectPath(formData, "/admin/offerings");
+
+  try {
+    await getAdminClient(path);
+
+    const id = readRequiredString(formData, "offering_id", "Offering");
+    await deleteRecord({ table: "service_offerings", id });
+
+    revalidateOfferings();
+    redirectWithState(path, { status: "Offering deleted." });
+  } catch (error) {
+    rethrowIfRedirectSignal(error);
+    redirectWithState(path, {
+      error: error instanceof Error ? error.message : "Unable to delete offering.",
+    });
+  }
+}
+
+// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
+
+function revalidateTestimonials() {
+  revalidateAdminSection("/admin/testimonials");
+}
+
+export async function saveTestimonialAction(formData: FormData) {
+  const path = resolveRedirectPath(formData, "/admin/testimonials");
+
+  try {
+    await getAdminClient(path);
+    const businessId = await getCurrentAdminBusinessId();
+
+    const id = readOptionalString(formData, "testimonial_id");
+    const rawRating = readOptionalString(formData, "rating");
+    const rating = rawRating ? Number.parseInt(rawRating, 10) : null;
+
+    await saveRecord({
+      table: "testimonials",
+      id,
+      values: {
+        business_id: businessId,
+        author_name: readRequiredString(formData, "author_name", "Author name"),
+        body: readRequiredString(formData, "body", "Testimonial text"),
+        rating: rating && Number.isFinite(rating) && rating >= 1 && rating <= 5 ? rating : null,
+        is_featured: readCheckbox(formData, "is_featured"),
+        is_active: readCheckbox(formData, "is_active"),
+        sort_order: readSortOrder(formData),
+      },
+    });
+
+    revalidateTestimonials();
+    redirectWithState(path, { status: "Testimonial saved." });
+  } catch (error) {
+    rethrowIfRedirectSignal(error);
+    redirectWithState(path, {
+      error: error instanceof Error ? error.message : "Unable to save testimonial.",
+    });
+  }
+}
+
+export async function deleteTestimonialAction(formData: FormData) {
+  const path = resolveRedirectPath(formData, "/admin/testimonials");
+
+  try {
+    await getAdminClient(path);
+
+    const id = readRequiredString(formData, "testimonial_id", "Testimonial");
+    await deleteRecord({ table: "testimonials", id });
+
+    revalidateTestimonials();
+    redirectWithState(path, { status: "Testimonial deleted." });
+  } catch (error) {
+    rethrowIfRedirectSignal(error);
+    redirectWithState(path, {
+      error: error instanceof Error ? error.message : "Unable to delete testimonial.",
+    });
+  }
+}
+
+// ─── SERVICE AREAS ────────────────────────────────────────────────────────────
+
+function revalidateServiceAreas() {
+  revalidateAdminSection("/admin/service-areas");
+}
+
+export async function saveServiceAreaAction(formData: FormData) {
+  const path = resolveRedirectPath(formData, "/admin/service-areas");
+
+  try {
+    await getAdminClient(path);
+    const businessId = await getCurrentAdminBusinessId();
+
+    const id = readOptionalString(formData, "area_id");
+
+    await saveRecord({
+      table: "service_areas",
+      id,
+      values: {
+        business_id: businessId,
+        name: readRequiredString(formData, "name", "Area name"),
+        sort_order: readSortOrder(formData),
+        is_active: readCheckbox(formData, "is_active"),
+      },
+    });
+
+    revalidateServiceAreas();
+    redirectWithState(path, { status: "Service area saved." });
+  } catch (error) {
+    rethrowIfRedirectSignal(error);
+    redirectWithState(path, {
+      error: error instanceof Error ? error.message : "Unable to save service area.",
+    });
+  }
+}
+
+export async function deleteServiceAreaAction(formData: FormData) {
+  const path = resolveRedirectPath(formData, "/admin/service-areas");
+
+  try {
+    await getAdminClient(path);
+
+    const id = readRequiredString(formData, "area_id", "Service area");
+    await deleteRecord({ table: "service_areas", id });
+
+    revalidateServiceAreas();
+    redirectWithState(path, { status: "Service area deleted." });
+  } catch (error) {
+    rethrowIfRedirectSignal(error);
+    redirectWithState(path, {
+      error: error instanceof Error ? error.message : "Unable to delete service area.",
+    });
+  }
+}
+
 export async function saveSetupSpecialsAction(formData: FormData) {
   const path = resolveRedirectPath(formData, "/admin/setup?step=5");
 

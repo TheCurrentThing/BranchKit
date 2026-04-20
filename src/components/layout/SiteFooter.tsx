@@ -22,19 +22,21 @@ export function SiteFooter({
             {brand.tagline}
           </p>
         </div>
-        <div>
-          <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
-            Hours
-          </h4>
-          <div className="mt-3 space-y-2 text-sm text-[var(--color-foreground)]/78">
-            {hours.map((entry) => (
-              <div key={entry.id} className="flex justify-between gap-4">
-                <span>{entry.dayLabel}</span>
-                <span>{entry.openText}</span>
-              </div>
-            ))}
+        {hours.length > 0 && (
+          <div>
+            <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
+              Hours
+            </h4>
+            <div className="mt-3 space-y-2 text-sm text-[var(--color-foreground)]/78">
+              {hours.map((entry) => (
+                <div key={entry.id} className="flex justify-between gap-4">
+                  <span>{entry.dayLabel}</span>
+                  <span>{entry.openText}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         <div>
           <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
             Visit

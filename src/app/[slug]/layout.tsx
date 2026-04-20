@@ -39,11 +39,11 @@ export default async function SlugSiteLayout({ children, params }: SlugLayoutPro
       <PageViewTracker />
       <div className="sticky top-0 z-50">
         <AnnouncementBar settings={settings} />
-        <SiteHeader brand={brand} basePath={basePath} />
+        <SiteHeader brand={brand} basePath={basePath} kitCategory={payload.kitCategory} />
       </div>
       <main>{children}</main>
       <SiteFooter brand={brand} hours={hours} />
-      <StickyMobileBar brand={brand} features={features} basePath={basePath} />
+      <StickyMobileBar brand={brand} features={features} basePath={basePath} kitCategory={payload.kitCategory} />
     </div>
   );
 }

@@ -293,7 +293,7 @@ export function ContactEditorClient({
                 value={email}
                 onChange={setEmail}
                 type="email"
-                placeholder="hello@yourrestaurant.com"
+                placeholder="hello@yourbusiness.com"
                 helper="Optional — shown in the contact section if entered"
               />
             </div>

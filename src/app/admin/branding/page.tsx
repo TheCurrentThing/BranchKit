@@ -28,6 +28,7 @@ export default async function AdminBrandingPage({ searchParams }: AdminPageProps
       <form action={saveBrandingAction} className="min-h-0 flex flex-1 flex-col overflow-hidden">
         <HiddenField name="redirect_to" value="/admin/branding" />
         <BrandingThemeForm
+          payload={payload}
           initialBrand={{
             businessName: payload.brand.businessName,
             tagline: payload.brand.tagline,

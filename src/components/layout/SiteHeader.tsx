@@ -1,9 +1,24 @@
 import { Button } from "@/components/ui/button";
+import { resolveShellCopy } from "@/lib/rendering/shell-copy-contract";
+import type { KitCategory } from "@/types/kit";
 import type { BrandConfig } from "@/types/site";
 
-export function SiteHeader({ brand, basePath = "" }: { brand: BrandConfig; basePath?: string }) {
+export function SiteHeader({
+  brand,
+  basePath = "",
+  kitCategory = "restaurant",
+}: {
+  brand: BrandConfig;
+  basePath?: string;
+  kitCategory?: KitCategory;
+}) {
+  const shell = resolveShellCopy(kitCategory);
+  const catalogHref = `${basePath}${shell.catalogPath}`;
+  const ctaHref = `${basePath}${shell.ctaPath}`;
+
   return (
     <header className="border-b border-[var(--color-border)] bg-[var(--color-header-background)] backdrop-blur">
+      {/* ── Desktop ── */}
       <div className="relative mx-auto hidden max-w-7xl px-4 sm:px-6 md:block lg:px-8">
         <div className="pointer-events-none absolute left-8 top-1/2 z-20 -translate-y-1/2 xl:left-10">
           <a href={basePath || "/"} className="pointer-events-auto block">
@@ -29,8 +44,8 @@ export function SiteHeader({ brand, basePath = "" }: { brand: BrandConfig; baseP
               <a href={basePath || "/"} className="text-sm font-medium text-[var(--color-foreground)]">
                 Home
               </a>
-              <a href={`${basePath}/menu`} className="text-sm font-medium text-[var(--color-foreground)]">
-                Menu
+              <a href={catalogHref} className="text-sm font-medium text-[var(--color-foreground)]">
+                {shell.catalogLabel}
               </a>
               <a href={`${basePath}/about`} className="text-sm font-medium text-[var(--color-foreground)]">
                 About
@@ -45,13 +60,14 @@ export function SiteHeader({ brand, basePath = "" }: { brand: BrandConfig; baseP
                 <a href={`tel:${brand.phone.replace(/[^\d]/g, "")}`}>Call</a>
               </Button>
               <Button asChild size="sm">
-                <a href={`${basePath}/menu`}>View Menu</a>
+                <a href={ctaHref}>{shell.ctaLabel}</a>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* ── Mobile ── */}
       <div className="space-y-4 border-b border-[var(--color-border)] px-4 py-4 md:hidden sm:px-6 lg:px-8">
         <div className="flex justify-start">
           <a href={basePath || "/"} className="block">
@@ -76,8 +92,8 @@ export function SiteHeader({ brand, basePath = "" }: { brand: BrandConfig; baseP
             <a href={basePath || "/"} className="text-sm font-medium text-[var(--color-foreground)]">
               Home
             </a>
-            <a href={`${basePath}/menu`} className="text-sm font-medium text-[var(--color-foreground)]">
-              Menu
+            <a href={catalogHref} className="text-sm font-medium text-[var(--color-foreground)]">
+              {shell.catalogLabel}
             </a>
             <a href={`${basePath}/about`} className="text-sm font-medium text-[var(--color-foreground)]">
               About
@@ -92,7 +108,7 @@ export function SiteHeader({ brand, basePath = "" }: { brand: BrandConfig; baseP
               <a href={`tel:${brand.phone.replace(/[^\d]/g, "")}`}>Call</a>
             </Button>
             <Button asChild size="sm">
-              <a href={`${basePath}/menu`}>View Menu</a>
+              <a href={ctaHref}>{shell.ctaLabel}</a>
             </Button>
           </div>
         </div>
@@ -100,4 +116,3 @@ export function SiteHeader({ brand, basePath = "" }: { brand: BrandConfig; baseP
     </header>
   );
 }
-

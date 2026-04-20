@@ -1,17 +1,24 @@
+import { resolveShellCopy } from "@/lib/rendering/shell-copy-contract";
+import type { KitCategory } from "@/types/kit";
 import type { BrandConfig, FeatureFlags } from "@/types/site";
 
 export function StickyMobileBar({
   brand,
   features,
   basePath = "",
+  kitCategory = "restaurant",
 }: {
   brand: BrandConfig;
   features: FeatureFlags;
   basePath?: string;
+  kitCategory?: KitCategory;
 }) {
   if (!features.showStickyMobileBar) {
     return null;
   }
+
+  const shell = resolveShellCopy(kitCategory);
+  const midHref = `${basePath}${shell.midPath}`;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--color-border)] bg-[var(--color-header-background)] backdrop-blur md:hidden">
@@ -23,10 +30,10 @@ export function StickyMobileBar({
           Call
         </a>
         <a
-          href={`${basePath}/menu`}
+          href={midHref}
           className="flex min-h-[56px] items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-button-secondary-bg)] text-sm font-semibold text-[var(--color-button-secondary-text)]"
         >
-          Menu
+          {shell.midLabel}
         </a>
         <a
           href={`https://maps.google.com/?q=${encodeURIComponent(`${brand.addressLine1}, ${brand.city}, ${brand.state} ${brand.zip}`)}`}

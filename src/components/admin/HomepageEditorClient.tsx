@@ -7,6 +7,7 @@ import {
   saveHomepageContentAction,
   saveFeatureSettingsAction,
 } from "@/app/admin/actions";
+import type { KitFamily } from "@/types/kit";
 
 /* ─── icon SVGs ─────────────────────────────────────────── */
 const EyeOn = () => (
@@ -71,6 +72,7 @@ type GalleryImage = { id: string; src: string; alt: string; isActive: boolean };
 
 export function HomepageEditorClient({
   businessName,
+  kitFamily = "food_service",
   announcement: initAnnouncement,
   hero: initHero,
   supporting: initSupporting,
@@ -79,6 +81,7 @@ export function HomepageEditorClient({
   galleryImages,
 }: {
   businessName: string;
+  kitFamily?: KitFamily;
   announcement: AnnouncementState;
   hero: HeroState;
   supporting: SupportingState;
@@ -86,6 +89,7 @@ export function HomepageEditorClient({
   features: FlagsState;
   galleryImages: GalleryImage[];
 }) {
+  const isFoodService = kitFamily === "food_service";
   const isMobile = useMobile();
   const [mobileTab, setMobileTab] = useState<"sections" | "edit">("edit");
   const [announcement, setAnnouncement] = useState(initAnnouncement);
@@ -102,11 +106,13 @@ export function HomepageEditorClient({
   const sections: Section[] = [
     { id: "announcement", label: "Announcement Bar",  live: announcement.isActive, toggleable: true },
     { id: "hero",         label: "Hero Section",      live: true,                  toggleable: false },
-    { id: "specials",     label: "Daily Specials",    live: flags.showSpecials,    toggleable: true, flagKey: "showSpecials",    editHref: "/admin/specials", contentHint: "Manage featured specials in the Specials section." },
-    { id: "featured",     label: "Featured Menu",     live: true,                  toggleable: false, editHref: "/admin/menu",   contentHint: "Edit menu items in the Menu section." },
+    ...(isFoodService ? [
+      { id: "specials" as SectionId, label: "Daily Specials",  live: flags.showSpecials, toggleable: true, flagKey: "showSpecials",    editHref: "/admin/specials", contentHint: "Manage featured specials in the Specials section." },
+      { id: "featured" as SectionId, label: "Featured Menu",   live: true,               toggleable: false, editHref: "/admin/menu",   contentHint: "Edit menu items in the Menu section." },
+    ] : []),
     { id: "about",        label: "About Section",     live: true,                  toggleable: false },
     { id: "gallery",      label: "Photo Gallery",     live: flags.showGallery,     toggleable: true, flagKey: "showGallery",     editHref: "/admin/photos",   contentHint: "Manage photos in the Photos section." },
-    { id: "testimonials", label: "Testimonials",      live: flags.showTestimonials,toggleable: true, flagKey: "showTestimonials",editHref: "/admin/settings", contentHint: "Testimonials are managed in Settings." },
+    { id: "testimonials", label: "Testimonials",      live: flags.showTestimonials,toggleable: true, flagKey: "showTestimonials",editHref: "/admin/testimonials", contentHint: "Manage testimonials in the Testimonials section." },
   ];
 
   const liveCount = sections.filter((s) => s.live).length;

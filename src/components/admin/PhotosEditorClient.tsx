@@ -417,7 +417,7 @@ export function PhotosEditorClient({
           <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: 10 }}>
             {[
               { dot: "#d97706", text: "Click a photo in the grid to edit it." },
-              { dot: "#4ade80", text: "Toggle Live/Hidden to control what guests see." },
+              { dot: "#4ade80", text: "Toggle Live/Hidden to control what visitors see." },
               { dot: "#d97706", text: "Use Order to set the sequence in the gallery." },
               { dot: "#4ade80", text: "Upload a new file or paste a URL — either works." },
             ].map(({ dot, text }, i) => (
