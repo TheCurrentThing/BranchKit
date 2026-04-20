@@ -7,10 +7,16 @@ import {
   ArrowUpRight,
   ChartLine,
   Broadcast,
+  Briefcase,
+  Star,
+  Images,
+  Package,
 } from "@phosphor-icons/react/dist/ssr";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { getAdminSitePayload, getPageViewStats } from "@/lib/queries";
+import { getCategoryConfig } from "@/lib/kit-config";
+import type { KitFamily } from "@/types/kit";
 
 /* ─── inline primitives (server-safe, no hooks) ───────────────── */
 
@@ -125,6 +131,23 @@ function ActionTile({
   );
 }
 
+/* ─── family-specific config ─────────────────────────────────────── */
+
+type FamilyDashboardConfig = {
+  primaryLabel: string;
+  primaryCount: number;
+  primarySub: string;
+  secondaryLabel: string;
+  secondaryCount: number;
+  secondarySub: string;
+  snapshotPrimaryLabel: string;
+  snapshotPrimaryContent: React.ReactNode;
+  actions: { label: string; desc: string; href: string; icon: PhosphorIcon }[];
+  statusPrimaryLabel: string;
+  statusPrimaryValue: string;
+  statusPrimaryOn: boolean;
+};
+
 /* ─── page ──────────────────────────────────────────────────────── */
 
 export default async function AdminDashboardPage() {
@@ -133,10 +156,46 @@ export default async function AdminDashboardPage() {
     getPageViewStats(),
   ]);
 
-  const totalItems = payload.menuCategories.reduce(
+  const kitConfig = getCategoryConfig(payload.kitCategory);
+  const kitFamily: KitFamily = payload.kitFamily;
+
+  // ── Section visibility using kit publicSections ───────────────
+  const SECTION_LABELS: Record<string, string> = {
+    hero: "Hero",
+    quick_info: "Quick Info",
+    announcements: "Announcements",
+    specials: "Specials",
+    events: "Events",
+    featured_menu: "Featured Menu",
+    menu_preview: "Menu",
+    offerings: "Offerings",
+    featured_products: "Products",
+    products: "Products",
+    testimonials: "Testimonials",
+    service_areas: "Service Areas",
+    gallery: "Gallery",
+    about: "About",
+    contact: "Contact",
+  };
+
+  const visibleSections = [
+    payload.meta.announcementIsActive && payload.meta.announcementBody.trim()
+      ? "Announcement"
+      : null,
+    ...kitConfig.publicSections.map((s) => SECTION_LABELS[s] ?? s),
+  ].filter(Boolean) as string[];
+
+  // ── Family-specific computed values ──────────────────────────
+  const totalMenuItems = payload.menuCategories.reduce(
     (count, cat) => count + cat.items.length,
     0,
   );
+  const totalOfferings = payload.serviceOfferings.length;
+  const totalTestimonials = payload.testimonials.length;
+  const featuredOffering =
+    payload.serviceOfferings.find((o) => o.isFeatured && o.isActive) ??
+    payload.serviceOfferings.find((o) => o.isActive) ??
+    null;
 
   const featuredSpecial =
     payload.specials.find((s) => s.isFeatured && s.isActive) ??
@@ -149,21 +208,137 @@ export default async function AdminDashboardPage() {
       : `${featuredSpecial.title} ($${featuredSpecial.price.toFixed(2)})`
     : "No live special selected";
 
-  const visibleSections = [
-    payload.meta.announcementIsActive && payload.meta.announcementBody.trim()
-      ? "Announcement"
-      : null,
-    "Hero",
-    payload.features.showSpecials ? "Specials" : null,
-    "Menu",
-    "About",
-    payload.features.showGallery ? "Gallery" : null,
-    payload.features.showTestimonials ? "Testimonials" : null,
-    "Contact",
-    payload.features.showMap ? "Map" : null,
-  ].filter(Boolean) as string[];
-
   const featuredCount = payload.specials.filter((s) => s.isFeatured).length;
+  const todayHours = payload.hours[0] ?? null;
+
+  // ── Family-specific actions ───────────────────────────────────
+  const FOOD_ACTIONS = [
+    { label: "Update Today's Special", desc: "Change the featured dish customers see right now", href: "/admin/specials", icon: Sparkle },
+    { label: "Edit Menu & Prices", desc: "Manage sections, items, descriptions, pricing", href: "/admin/menu", icon: ForkKnife },
+    { label: "Change Hours", desc: "Update business hours and quick-hours summary", href: "/admin/hours", icon: Clock },
+    { label: "Post Announcement", desc: "Update the top banner — closures, promos, reminders", href: "/admin/homepage", icon: House },
+  ];
+
+  const SERVICES_ACTIONS = [
+    { label: "Manage Services", desc: "Add, edit, or reorder your service offerings", href: "/admin/offerings", icon: Briefcase },
+    { label: "Add Testimonial", desc: "Publish a client review or recommendation", href: "/admin/testimonials", icon: Star },
+    { label: "Change Hours", desc: "Update business hours and quick-hours summary", href: "/admin/hours", icon: Clock },
+    { label: "Post Announcement", desc: "Update the top banner — closures, promos, reminders", href: "/admin/homepage", icon: House },
+  ];
+
+  const RETAIL_ACTIONS = [
+    { label: "Manage Products", desc: "Add, edit, or reorder your product catalog", href: "/admin/products", icon: Package },
+    { label: "Update Gallery", desc: "Add photos of your work and products", href: "/admin/gallery", icon: Images },
+    { label: "Post Announcement", desc: "Update the top banner — closures, promos, reminders", href: "/admin/homepage", icon: House },
+  ];
+
+  const familyActions =
+    kitFamily === "services" ? SERVICES_ACTIONS
+    : kitFamily === "retail_products" ? RETAIL_ACTIONS
+    : FOOD_ACTIONS;
+
+  // ── Family-specific metrics + snapshot ───────────────────────
+  const familyConfig: FamilyDashboardConfig =
+    kitFamily === "services"
+      ? {
+          primaryLabel: "Offerings",
+          primaryCount: totalOfferings,
+          primarySub: "in service catalog",
+          secondaryLabel: "Testimonials",
+          secondaryCount: totalTestimonials,
+          secondarySub: "client reviews",
+          snapshotPrimaryLabel: "Featured Offering",
+          snapshotPrimaryContent: featuredOffering ? (
+            <>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#e2e0d8", marginTop: 5, letterSpacing: "-0.01em" }}>
+                {featuredOffering.title}
+              </p>
+              {featuredOffering.shortDescription && (
+                <p style={{ fontSize: 11, color: "#5a5a64", marginTop: 3 }}>
+                  {featuredOffering.shortDescription}
+                </p>
+              )}
+              {featuredOffering.startingPrice && (
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#d97706", marginTop: 7 }}>
+                  {featuredOffering.startingPrice}
+                </p>
+              )}
+            </>
+          ) : (
+            <p style={{ fontSize: 12, color: "#5a5a64", marginTop: 5 }}>No offering is currently featured</p>
+          ),
+          actions: familyActions,
+          statusPrimaryLabel: "Offerings",
+          statusPrimaryValue: `${totalOfferings} in catalog`,
+          statusPrimaryOn: totalOfferings > 0,
+        }
+      : kitFamily === "retail_products"
+      ? {
+          primaryLabel: "Gallery",
+          primaryCount: payload.galleryImages.length,
+          primarySub: "visible photos",
+          secondaryLabel: "Sections",
+          secondaryCount: visibleSections.length,
+          secondarySub: "homepage live",
+          snapshotPrimaryLabel: "Gallery",
+          snapshotPrimaryContent: (
+            <p style={{ fontSize: 12, color: "#7a7a84", marginTop: 5 }}>
+              {payload.galleryImages.length} photo{payload.galleryImages.length !== 1 ? "s" : ""} in library
+            </p>
+          ),
+          actions: familyActions,
+          statusPrimaryLabel: "Gallery",
+          statusPrimaryValue: `${payload.galleryImages.length} images`,
+          statusPrimaryOn: payload.galleryImages.length > 0,
+        }
+      : {
+          // food_service
+          primaryLabel: "Menu Items",
+          primaryCount: totalMenuItems,
+          primarySub: `across ${payload.menuCategories.length} sections`,
+          secondaryLabel: "Featured",
+          secondaryCount: featuredCount,
+          secondarySub: "starred items",
+          snapshotPrimaryLabel: "Today's Special",
+          snapshotPrimaryContent: featuredSpecial ? (
+            <>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#e2e0d8", marginTop: 5, letterSpacing: "-0.01em" }}>
+                {featuredSpecial.title}
+              </p>
+              {featuredSpecial.description && (
+                <p style={{ fontSize: 11, color: "#5a5a64", marginTop: 3 }}>
+                  {featuredSpecial.description}
+                </p>
+              )}
+              {featuredSpecial.price !== null && (
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#d97706", marginTop: 7 }}>
+                  ${featuredSpecial.price.toFixed(2)}
+                </p>
+              )}
+            </>
+          ) : (
+            <p style={{ fontSize: 12, color: "#5a5a64", marginTop: 5 }}>No special is currently featured</p>
+          ),
+          actions: familyActions,
+          statusPrimaryLabel: "Active Special",
+          statusPrimaryValue: featuredSpecial ? "1 running" : "None",
+          statusPrimaryOn: !!featuredSpecial,
+        };
+
+  // ── Activity log ──────────────────────────────────────────────
+  const primaryActivityEvent =
+    kitFamily === "services"
+      ? `${totalOfferings} service${totalOfferings !== 1 ? "s" : ""} in catalog`
+      : kitFamily === "retail_products"
+      ? `${payload.galleryImages.length} gallery photo${payload.galleryImages.length !== 1 ? "s" : ""}`
+      : `${totalMenuItems} menu items`;
+
+  const primaryActivityDetail =
+    kitFamily === "services"
+      ? `${totalTestimonials} client testimonial${totalTestimonials !== 1 ? "s" : ""}`
+      : kitFamily === "retail_products"
+      ? "in photo library"
+      : `across ${payload.menuCategories.length} ${payload.menuCategories.length === 1 ? "category" : "categories"}`;
 
   const activityItems = [
     {
@@ -171,15 +346,23 @@ export default async function AdminDashboardPage() {
       event: "Site is published",
       detail: `${visibleSections.length} homepage sections visible`,
     },
+    kitFamily === "food_service"
+      ? {
+          time: "Active",
+          event: "Featured special",
+          detail: featuredSpecialLabel,
+        }
+      : kitFamily === "services"
+      ? {
+          time: "Active",
+          event: featuredOffering ? `Featured: ${featuredOffering.title}` : "No featured offering",
+          detail: featuredOffering?.shortDescription ?? "Set a featured offering to highlight it",
+        }
+      : null,
     {
       time: "Active",
-      event: "Featured special",
-      detail: featuredSpecialLabel,
-    },
-    {
-      time: "Active",
-      event: `${totalItems} menu items`,
-      detail: `across ${payload.menuCategories.length} ${payload.menuCategories.length === 1 ? "category" : "categories"}`,
+      event: primaryActivityEvent,
+      detail: primaryActivityDetail,
     },
     {
       time: "Active",
@@ -200,9 +383,7 @@ export default async function AdminDashboardPage() {
           detail: "views in last 7 days",
         }))
       : []),
-  ];
-
-  const todayHours = payload.hours[0] ?? null;
+  ].filter(Boolean) as { time: string; event: string; detail: string }[];
 
   return (
     <AdminShell
@@ -255,9 +436,9 @@ export default async function AdminDashboardPage() {
             <div style={{ padding: "4px 16px 8px" }}>
               <SysRow label="Site Status" value="Published" on={true} />
               <SysRow
-                label="Active Special"
-                value={featuredSpecial ? "1 running" : "None"}
-                on={!!featuredSpecial}
+                label={familyConfig.statusPrimaryLabel}
+                value={familyConfig.statusPrimaryValue}
+                on={familyConfig.statusPrimaryOn}
               />
               <SysRow
                 label="Open Today"
@@ -265,7 +446,12 @@ export default async function AdminDashboardPage() {
                 on={payload.hours.length > 0}
               />
               <SysRow label="Gallery" value={`${payload.galleryImages.length} images`} />
-              <SysRow label="Menu Items" value={`${totalItems} items`} />
+              {kitFamily === "services" && (
+                <SysRow label="Testimonials" value={`${totalTestimonials} reviews`} />
+              )}
+              {kitFamily === "food_service" && (
+                <SysRow label="Menu Items" value={`${totalMenuItems} items`} />
+              )}
               <SysRow label="Sections Live" value={`${visibleSections.length} visible`} />
             </div>
           </div>
@@ -273,15 +459,15 @@ export default async function AdminDashboardPage() {
           {/* Metrics grid */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             <MetricTile
-              label="Menu Items"
-              value={String(totalItems)}
-              sub={`across ${payload.menuCategories.length} sections`}
+              label={familyConfig.primaryLabel}
+              value={String(familyConfig.primaryCount)}
+              sub={familyConfig.primarySub}
               amber
             />
             <MetricTile
-              label="Featured"
-              value={String(featuredCount)}
-              sub="starred items"
+              label={familyConfig.secondaryLabel}
+              value={String(familyConfig.secondaryCount)}
+              sub={familyConfig.secondarySub}
             />
             <MetricTile
               label="Gallery"
@@ -290,7 +476,7 @@ export default async function AdminDashboardPage() {
             />
             <MetricTile
               label="Sections"
-              value={`${visibleSections.length}/9`}
+              value={`${visibleSections.length}`}
               sub="homepage live"
               amber
             />
@@ -338,30 +524,15 @@ export default async function AdminDashboardPage() {
               </span>
             </div>
             <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 7 }}>
-              <ActionTile
-                label="Update Today's Special"
-                desc="Change the featured dish customers see right now"
-                href="/admin/specials"
-                icon={Sparkle}
-              />
-              <ActionTile
-                label="Edit Menu & Prices"
-                desc="Manage sections, items, descriptions, pricing"
-                href="/admin/menu"
-                icon={ForkKnife}
-              />
-              <ActionTile
-                label="Change Hours"
-                desc="Update business hours and quick-hours summary"
-                href="/admin/hours"
-                icon={Clock}
-              />
-              <ActionTile
-                label="Post Announcement"
-                desc="Update the top banner — closures, promos, reminders"
-                href="/admin/homepage"
-                icon={House}
-              />
+              {familyConfig.actions.map((action) => (
+                <ActionTile
+                  key={action.href}
+                  label={action.label}
+                  desc={action.desc}
+                  href={action.href}
+                  icon={action.icon}
+                />
+              ))}
             </div>
           </div>
 
@@ -490,7 +661,7 @@ export default async function AdminDashboardPage() {
               </p>
             </div>
 
-            {/* Today's Special */}
+            {/* Family-specific primary snapshot panel */}
             <div
               style={{
                 padding: "10px 12px",
@@ -500,36 +671,8 @@ export default async function AdminDashboardPage() {
                 marginBottom: 8,
               }}
             >
-              <span className="label-upper">Today&apos;s Special</span>
-              {featuredSpecial ? (
-                <>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      color: "#e2e0d8",
-                      marginTop: 5,
-                      letterSpacing: "-0.01em",
-                    }}
-                  >
-                    {featuredSpecial.title}
-                  </p>
-                  {featuredSpecial.description && (
-                    <p style={{ fontSize: 11, color: "#5a5a64", marginTop: 3 }}>
-                      {featuredSpecial.description}
-                    </p>
-                  )}
-                  {featuredSpecial.price !== null && (
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#d97706", marginTop: 7 }}>
-                      ${featuredSpecial.price.toFixed(2)}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <p style={{ fontSize: 12, color: "#5a5a64", marginTop: 5 }}>
-                  No special is currently featured
-                </p>
-              )}
+              <span className="label-upper">{familyConfig.snapshotPrimaryLabel}</span>
+              {familyConfig.snapshotPrimaryContent}
             </div>
 
             {/* Hours */}

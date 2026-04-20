@@ -1,6 +1,6 @@
 import type { BusinessSpecial, MenuCategory } from "@/types/menu";
 import type { ThemeTokens } from "@/lib/theme";
-import type { KitType } from "@/types/kit";
+import type { KitFamily, KitCategory, KitType } from "@/types/kit";
 import type { RendererType } from "@/types/renderer";
 
 export interface SocialLinks {
@@ -109,12 +109,26 @@ export interface Testimonial {
   id: string;
   quote: string;
   author: string;
+  rating?: number | null;
+  isFeatured?: boolean;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface ServiceOffering {
+  id: string;
+  title: string;
+  shortDescription: string | null;
+  startingPrice: string | null;
+  isFeatured: boolean;
   isActive: boolean;
   sortOrder: number;
 }
 
 export interface SitePayload {
-  kitType: KitType;
+  kitType: KitType;         // compat alias — mirrors kitCategory
+  kitFamily: KitFamily;
+  kitCategory: KitCategory;
   rendererType: RendererType;
   brand: BrandConfig;
   features: FeatureFlags;
@@ -124,6 +138,7 @@ export interface SitePayload {
   aboutPage: AboutPageContent;
   specials: BusinessSpecial[];
   menuCategories: MenuCategory[];
+  serviceOfferings: ServiceOffering[];
   galleryImages: GalleryImage[];
   testimonials: Testimonial[];
 }

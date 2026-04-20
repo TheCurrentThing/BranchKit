@@ -5,6 +5,8 @@ import type { SitePayload } from "@/types/site";
 export const seedSitePayload: SitePayload = {
   brand: brandConfig,
   kitType: "restaurant",
+  kitFamily: "food_service",
+  kitCategory: "restaurant",
   rendererType: "standard",
   features: {
     ...featureFlags,
@@ -543,5 +545,6 @@ export const seedSitePayload: SitePayload = {
       isActive: true,
     },
   ],
+  serviceOfferings: [],
   testimonials: [],
 };

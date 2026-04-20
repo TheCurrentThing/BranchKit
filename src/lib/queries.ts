@@ -12,11 +12,11 @@ import {
   themeTokensToLegacyFields,
 } from "@/lib/theme-utils";
 import { createSupabaseAdminClient, isSupabaseConfigured } from "@/lib/supabase";
-import { getCurrentAdminBusinessId, getBusinessBySlug, type BusinessRow } from "@/lib/business";
-import { toKitType } from "@/lib/kit-config";
+import { getCurrentAdminBusinessId, getBusinessBySlug, type BusinessRow, type SiteStatus } from "@/lib/business";
+import { resolveKitIdentity } from "@/lib/kit-config";
 import { toRendererType } from "@/lib/renderer-config";
 import { getBusinessEntitlements, resolveRendererType, hasEntitlement } from "@/lib/entitlements";
-import type { KitType } from "@/types/kit";
+import type { KitFamily, KitCategory, KitType } from "@/types/kit";
 import type { RendererType } from "@/types/renderer";
 import type {
   AboutPageContent,
@@ -26,8 +26,10 @@ import type {
   GalleryImage,
   HomePageContent,
   LogoAlignment,
+  ServiceOffering,
   SitePayload,
   SiteSettings,
+  Testimonial,
 } from "@/types/site";
 import type { BusinessSpecial, MenuCategory } from "@/types/menu";
 
@@ -165,6 +167,28 @@ type GalleryImageRow = {
   is_active: boolean;
 };
 
+type ServiceOfferingRow = {
+  id: string;
+  business_id: string;
+  title: string;
+  short_description: string | null;
+  starting_price: string | null;
+  is_featured: boolean;
+  is_active: boolean;
+  sort_order: number;
+};
+
+type TestimonialRow = {
+  id: string;
+  business_id: string;
+  author_name: string;
+  body: string;
+  rating: number | null;
+  is_featured: boolean;
+  is_active: boolean;
+  sort_order: number;
+};
+
 type SiteRows = {
   settingsRow: BusinessSettingsRow | null;
   announcementsRows: AnnouncementRow[];
@@ -174,6 +198,8 @@ type SiteRows = {
   categoriesRows: MenuCategoryRow[];
   itemsRows: MenuItemRow[];
   galleryRows: GalleryImageRow[];
+  serviceOfferingsRows: ServiceOfferingRow[];
+  testimonialsRows: TestimonialRow[];
 };
 
 // ─── ADMIN PAYLOAD TYPE ───────────────────────────────────────────────────────
@@ -376,9 +402,9 @@ function mapHours(hoursRows: BusinessHoursRow[] | null): BusinessHour[] {
   }));
 }
 
-function mapSpecials(rows: SpecialsRow[] | null): BusinessSpecial[] {
+function mapSpecials(rows: SpecialsRow[] | null, kitFamily: KitFamily = "food_service"): BusinessSpecial[] {
   if (!rows || rows.length === 0) {
-    return seedSitePayload.specials;
+    return kitFamily === "food_service" ? seedSitePayload.specials : [];
   }
 
   return rows.map((row) => ({
@@ -396,9 +422,10 @@ function mapSpecials(rows: SpecialsRow[] | null): BusinessSpecial[] {
 function mapMenu(
   categoryRows: MenuCategoryRow[] | null,
   itemRows: MenuItemRow[] | null,
+  kitFamily: KitFamily = "food_service",
 ): MenuCategory[] {
   if (!categoryRows || categoryRows.length === 0) {
-    return seedSitePayload.menuCategories;
+    return kitFamily === "food_service" ? seedSitePayload.menuCategories : [];
   }
 
   const deletedSeedSlugs = new Set(
@@ -442,19 +469,21 @@ function mapMenu(
     }));
 
   const liveSlugs = new Set(liveCategories.map((category) => category.slug));
-  const fallbackCategories = seedSitePayload.menuCategories.filter(
-    (category) =>
-      !liveSlugs.has(category.slug) && !deletedSeedSlugs.has(category.slug),
-  );
+  const fallbackCategories = kitFamily === "food_service"
+    ? seedSitePayload.menuCategories.filter(
+        (category) =>
+          !liveSlugs.has(category.slug) && !deletedSeedSlugs.has(category.slug),
+      )
+    : [];
 
   return [...liveCategories, ...fallbackCategories].sort(
     (left, right) => left.sortOrder - right.sortOrder,
   );
 }
 
-function mapGallery(rows: GalleryImageRow[] | null): GalleryImage[] {
+function mapGallery(rows: GalleryImageRow[] | null, kitFamily: KitFamily = "food_service"): GalleryImage[] {
   if (!rows || rows.length === 0) {
-    return seedSitePayload.galleryImages;
+    return kitFamily === "food_service" ? seedSitePayload.galleryImages : [];
   }
 
   const liveImages = rows.map((row) => ({
@@ -466,13 +495,41 @@ function mapGallery(rows: GalleryImageRow[] | null): GalleryImage[] {
   }));
 
   const liveSortOrders = new Set(liveImages.map((image) => image.sortOrder));
-  const fallbackImages = seedSitePayload.galleryImages.filter(
-    (image) => !liveSortOrders.has(image.sortOrder),
-  );
+  const fallbackImages = kitFamily === "food_service"
+    ? seedSitePayload.galleryImages.filter(
+        (image) => !liveSortOrders.has(image.sortOrder),
+      )
+    : [];
 
   return [...liveImages, ...fallbackImages].sort(
     (left, right) => left.sortOrder - right.sortOrder,
   );
+}
+
+function mapServiceOfferings(rows: ServiceOfferingRow[] | null): ServiceOffering[] {
+  if (!rows || rows.length === 0) return [];
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    shortDescription: row.short_description,
+    startingPrice: row.starting_price,
+    isFeatured: row.is_featured,
+    isActive: row.is_active,
+    sortOrder: row.sort_order,
+  }));
+}
+
+function mapTestimonials(rows: TestimonialRow[] | null): Testimonial[] {
+  if (!rows || rows.length === 0) return [];
+  return rows.map((row) => ({
+    id: row.id,
+    quote: row.body,
+    author: row.author_name,
+    rating: row.rating,
+    isFeatured: row.is_featured,
+    isActive: row.is_active,
+    sortOrder: row.sort_order,
+  }));
 }
 
 function pickPublicAnnouncement(rows: AnnouncementRow[]) {
@@ -511,6 +568,7 @@ function filterPayloadForPublic(payload: SitePayload): SitePayload {
     specials: payload.features.showSpecials
       ? payload.specials.filter((entry) => entry.isActive)
       : [],
+    serviceOfferings: payload.serviceOfferings.filter((o) => o.isActive),
     galleryImages: payload.features.showGallery
       ? payload.galleryImages.filter((entry) => entry.isActive)
       : [],
@@ -535,6 +593,8 @@ const fetchSiteRowsCached = cache(async (businessId: string): Promise<SiteRows |
     categoriesResult,
     itemsResult,
     galleryResult,
+    serviceOfferingsResult,
+    testimonialsResult,
   ] = await Promise.all([
     client
       .from("business_settings")
@@ -587,6 +647,18 @@ const fetchSiteRowsCached = cache(async (businessId: string): Promise<SiteRows |
       .eq("business_id", businessId)
       .order("sort_order", { ascending: true })
       .returns<GalleryImageRow[]>(),
+    client
+      .from("service_offerings")
+      .select("id, business_id, title, short_description, starting_price, is_featured, is_active, sort_order")
+      .eq("business_id", businessId)
+      .order("sort_order", { ascending: true })
+      .returns<ServiceOfferingRow[]>(),
+    client
+      .from("testimonials")
+      .select("id, business_id, author_name, body, rating, is_featured, is_active, sort_order")
+      .eq("business_id", businessId)
+      .order("sort_order", { ascending: true })
+      .returns<TestimonialRow[]>(),
   ]);
 
   return {
@@ -598,13 +670,16 @@ const fetchSiteRowsCached = cache(async (businessId: string): Promise<SiteRows |
     categoriesRows: categoriesResult.data ?? [],
     itemsRows: itemsResult.data ?? [],
     galleryRows: galleryResult.data ?? [],
+    serviceOfferingsRows: serviceOfferingsResult.data ?? [],
+    testimonialsRows: testimonialsResult.data ?? [],
   };
 });
 
 async function loadPayload(
   businessId: string,
   businessSlug: string,
-  kitType: KitType = "restaurant",
+  kitCategory: KitCategory = "restaurant",
+  kitFamily: KitFamily = "food_service",
   rendererType: RendererType = "standard",
 ): Promise<AdminSitePayload> {
   noStore();
@@ -624,7 +699,9 @@ async function loadPayload(
     : null;
 
   return {
-    kitType,
+    kitType: kitCategory, // compat alias
+    kitCategory,
+    kitFamily,
     rendererType: effectiveRendererType,
     businessSlug,
     brand: mapBrand(rows?.settingsRow ?? null),
@@ -637,10 +714,11 @@ async function loadPayload(
     hours: mapHours(rows?.hoursRows ?? null),
     homePage: mapHomepage(rows?.homepageRow ?? null),
     aboutPage: mapAbout(rows?.homepageRow ?? null),
-    specials: mapSpecials(rows?.specialsRows ?? null),
-    menuCategories: mapMenu(rows?.categoriesRows ?? null, rows?.itemsRows ?? null),
-    galleryImages: mapGallery(rows?.galleryRows ?? null),
-    testimonials: seedSitePayload.testimonials,
+    specials: mapSpecials(rows?.specialsRows ?? null, kitFamily),
+    menuCategories: mapMenu(rows?.categoriesRows ?? null, rows?.itemsRows ?? null, kitFamily),
+    serviceOfferings: mapServiceOfferings(rows?.serviceOfferingsRows ?? null),
+    galleryImages: mapGallery(rows?.galleryRows ?? null, kitFamily),
+    testimonials: mapTestimonials(rows?.testimonialsRows ?? null),
     meta: {
       businessSettingsId: rows?.settingsRow?.id ?? null,
       homepageContentId: rows?.homepageRow?.id ?? null,
@@ -657,7 +735,7 @@ async function loadPayload(
 
 // ─── PUBLIC EXPORTS ───────────────────────────────────────────────────────────
 
-// Cached per request — resolves the full admin business row (id + slug + name + kit_type)
+// Cached per request — resolves the full admin business row (id + slug + name + kit identity)
 const fetchAdminBusinessCached = cache(async (): Promise<BusinessRow | null> => {
   if (!isSupabaseConfigured()) return null;
   const client = createSupabaseAdminClient();
@@ -666,11 +744,26 @@ const fetchAdminBusinessCached = cache(async (): Promise<BusinessRow | null> => 
   const businessId = await getCurrentAdminBusinessId();
   const { data } = await client
     .from("businesses")
-    .select("id, slug, name, is_active, site_status, kit_type, renderer_type")
+    .select("id, slug, name, is_active, site_status, kit_type, kit_category, kit_family, renderer_type")
     .eq("id", businessId)
-    .maybeSingle<Omit<BusinessRow, "kit_type" | "renderer_type"> & { kit_type: string; renderer_type: string }>();
+    .maybeSingle<{
+      id: string; slug: string; name: string; is_active: boolean; site_status: string;
+      kit_type: string; kit_category: string | null; kit_family: string | null; renderer_type: string;
+    }>();
   if (!data) return null;
-  return { ...data, kit_type: toKitType(data.kit_type), renderer_type: toRendererType(data.renderer_type) };
+  const identity = resolveKitIdentity({
+    kitFamily: data.kit_family,
+    kitCategory: data.kit_category,
+    legacyKitType: data.kit_type,
+  });
+  return {
+    ...data,
+    site_status: data.site_status as SiteStatus,
+    kit_type: identity.category,
+    kit_category: identity.category,
+    kit_family: identity.family,
+    renderer_type: toRendererType(data.renderer_type),
+  };
 });
 
 /**
@@ -680,7 +773,13 @@ const fetchAdminBusinessCached = cache(async (): Promise<BusinessRow | null> => 
 export async function getAdminSitePayload(): Promise<AdminSitePayload> {
   const businessId = await getCurrentAdminBusinessId();
   const business = await fetchAdminBusinessCached();
-  return loadPayload(businessId, business?.slug ?? "", business?.kit_type ?? "restaurant", business?.renderer_type ?? "standard");
+  return loadPayload(
+    businessId,
+    business?.slug ?? "",
+    business?.kit_category ?? "restaurant",
+    business?.kit_family ?? "food_service",
+    business?.renderer_type ?? "standard",
+  );
 }
 
 /**
@@ -690,7 +789,13 @@ export async function getAdminSitePayload(): Promise<AdminSitePayload> {
 export async function getSitePayload(): Promise<SitePayload> {
   const businessId = await getCurrentAdminBusinessId();
   const business = await fetchAdminBusinessCached();
-  const payload = await loadPayload(businessId, business?.slug ?? "", business?.kit_type ?? "restaurant", business?.renderer_type ?? "standard");
+  const payload = await loadPayload(
+    businessId,
+    business?.slug ?? "",
+    business?.kit_category ?? "restaurant",
+    business?.kit_family ?? "food_service",
+    business?.renderer_type ?? "standard",
+  );
   return filterPayloadForPublic(payload);
 }
 
@@ -710,7 +815,7 @@ export async function getBusinessSitePayload(slug: string): Promise<SitePayload 
   const entitlements = await getBusinessEntitlements(business.id);
   if (!hasEntitlement(entitlements, "site_live")) return null;
 
-  const payload = await loadPayload(business.id, business.slug, business.kit_type, business.renderer_type);
+  const payload = await loadPayload(business.id, business.slug, business.kit_category, business.kit_family, business.renderer_type);
   return filterPayloadForPublic(payload);
 }
 
