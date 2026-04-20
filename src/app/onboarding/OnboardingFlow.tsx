@@ -410,73 +410,43 @@ function KitStep({
                   const kit: KitDefinition = KITS[category];
                   const IconComponent = KIT_ICONS[category];
                   const selected = data.kitCategory === category;
+
+                  const baseCard = "rounded-2xl border bg-gradient-to-b transition-all duration-150";
+                  const inactiveCard = "border-white/[0.08] bg-white/[0.03] from-white/[0.04] to-white/[0.02] hover:border-white/[0.14] hover:bg-white/[0.05] hover:from-white/[0.05] hover:to-white/[0.03] hover:-translate-y-px";
+                  const activeCard = "border-amber-400/40 bg-amber-500/10 from-amber-400/[0.12] to-amber-500/[0.06] shadow-[0_0_0_1px_rgba(251,191,36,0.12)]";
+
                   return (
                     <button
                       key={category}
                       type="button"
                       onClick={() => update({ kitCategory: category })}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 8,
-                        padding: "12px 14px",
-                        borderRadius: 8,
-                        border: `1px solid ${selected ? "rgba(217,119,6,0.32)" : "var(--admin-panel-border)"}`,
-                        background: selected ? "rgba(217,119,6,0.07)" : "var(--admin-panel-bg)",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        transition: "background 0.12s, border-color 0.12s",
-                        position: "relative",
-                      }}
+                      className={`relative flex flex-col gap-2 px-3.5 py-3 text-left cursor-pointer ${baseCard} ${selected ? activeCard : inactiveCard}`}
                     >
                       {selected && (
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: 9,
-                            right: 9,
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: "#d97706",
-                          }}
-                        />
+                        <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-amber-500" />
                       )}
                       <IconComponent
                         size={16}
                         weight={selected ? "duotone" : "regular"}
-                        style={{ color: selected ? "#d97706" : "var(--admin-text-muted)" }}
+                        style={{ color: selected ? "#d97706" : "rgba(255,255,255,0.45)" }}
                       />
                       <div>
-                        <div
-                          style={{
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: selected ? "var(--admin-text)" : "var(--admin-text-muted)",
-                            marginBottom: 2,
-                          }}
-                        >
+                        <div className={`text-xs font-semibold mb-0.5 ${selected ? "text-white" : "text-white/[0.88]"}`}>
                           {kit.label}
                         </div>
-                        <div style={{ fontSize: 10.5, color: "var(--admin-text-muted)", lineHeight: 1.4 }}>
+                        <div className={`text-[10.5px] leading-snug ${selected ? "text-white/70" : "text-white/[0.55]"}`}>
                           {kit.description}
                         </div>
                       </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+                      <div className="flex flex-wrap gap-1">
                         {kit.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
-                            style={{
-                              fontSize: 8.5,
-                              fontWeight: 600,
-                              letterSpacing: "0.08em",
-                              textTransform: "uppercase",
-                              padding: "2px 5px",
-                              borderRadius: 4,
-                              background: selected ? "rgba(217,119,6,0.1)" : "rgba(255,255,255,0.04)",
-                              color: selected ? "#d97706" : "var(--admin-text-muted)",
-                              border: `1px solid ${selected ? "rgba(217,119,6,0.2)" : "var(--admin-panel-border)"}`,
-                            }}
+                            className={`text-[8.5px] font-semibold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded ${
+                              selected
+                                ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                                : "border border-white/[0.08] bg-white/[0.03] text-white/[0.45]"
+                            }`}
                           >
                             {tag}
                           </span>
