@@ -22,7 +22,10 @@ export function HeroOnDemand({ payload }: { payload: SitePayload }) {
             </p>
           </div>
           <h1 className="mt-3 text-4xl font-bold leading-[1.05] text-white md:text-6xl">
-            {payload.brand.tagline || `${payload.brand.businessName} is on call.`}
+            {payload.brand.tagline ||
+              (payload.brand.businessName
+                ? `${payload.brand.businessName} is on call.`
+                : "Dispatch is open.")}
           </h1>
           <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-zinc-400">
             <li>• Licensed &amp; insured</li>

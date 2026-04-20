@@ -1188,7 +1188,7 @@ export async function saveBrandingAction(formData: FormData) {
   await getAdminClient(path);
   const businessId = await getCurrentAdminBusinessId();
 
-  const businessName = readRequiredString(formData, "business_name", "Business name");
+  const businessName = readOptionalString(formData, "business_name") ?? "";
   const logoFile = readOptionalFile(formData, "logo_file");
   const themeModeRaw = readOptionalString(formData, "theme_mode");
   const themeMode = themeModeRaw === "custom" ? "custom" : "preset";
@@ -1235,13 +1235,21 @@ export async function saveBrandingAction(formData: FormData) {
 
   if (logoFile) {
     try {
-      uploadedLogoUrl = await uploadLogoFile(logoFile, businessName);
+      uploadedLogoUrl = await uploadLogoFile(logoFile, businessName || "business");
     } catch (error) {
       rethrowIfRedirectSignal(error);
       redirectWithState(path, {
         error: error instanceof Error ? error.message : "Unable to upload the logo.",
       });
     }
+  }
+
+  // Require at least a name or a logo — but never throw, always redirect gracefully.
+  const finalLogoUrl = uploadedLogoUrl ?? readOptionalString(formData, "logo_url");
+  if (!businessName && !finalLogoUrl) {
+    redirectWithState(path, {
+      error: "Enter a business name or add a logo.",
+    });
   }
 
   // Save hero / CTA fields to homepage_content if the form includes them.
@@ -1295,8 +1303,8 @@ export async function saveBrandingAction(formData: FormData) {
     businessId,
     {
       business_name: businessName,
-      tagline: readRequiredString(formData, "tagline", "Tagline"),
-      logo_url: uploadedLogoUrl ?? readOptionalString(formData, "logo_url"),
+      tagline: readOptionalString(formData, "tagline") ?? "",
+      logo_url: finalLogoUrl,
       header_logo_alignment: "left",
       theme_mode: savedThemeMode,
       theme_preset_id: resolvedTheme.id,

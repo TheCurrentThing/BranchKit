@@ -32,7 +32,7 @@ export function HeroArtist({ payload }: { payload: SitePayload }) {
         <div className="absolute inset-x-0 bottom-0 px-6 pb-14 md:pb-20">
           <div className="mx-auto max-w-6xl">
             <p className="font-serif text-sm italic tracking-wide text-amber-200">
-              Studio of {payload.brand.businessName}
+              {payload.brand.businessName ? `Studio of ${payload.brand.businessName}` : null}
             </p>
             <h1 className="mt-3 font-serif text-5xl font-medium leading-[1.02] text-white md:text-7xl">
               {payload.brand.tagline || "Work made slowly, by hand."}

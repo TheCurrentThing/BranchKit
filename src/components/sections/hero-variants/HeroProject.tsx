@@ -18,7 +18,9 @@ export function HeroProject({ payload }: { payload: SitePayload }) {
           </p>
           <h1 className="mt-4 text-4xl font-semibold leading-[1.1] text-white md:text-5xl">
             {payload.brand.tagline ||
-              `Considered work, delivered by ${payload.brand.businessName}.`}
+              (payload.brand.businessName
+                ? `Considered work, delivered by ${payload.brand.businessName}.`
+                : "Considered work, built to last.")}
           </h1>
           <p className="mt-5 max-w-lg text-base text-zinc-400">
             Every engagement starts with a scoped proposal and a fixed timeline.
