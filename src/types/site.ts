@@ -67,7 +67,7 @@ export interface SiteSettings {
   heroSecondaryCtaLabel: string;
   heroSecondaryCtaHref: string;
   quickInfoHoursLabel: string;
-  orderingNotice: string;
+  orderingNotice: string | null;
 }
 
 export interface BusinessHour {
