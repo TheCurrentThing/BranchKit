@@ -946,6 +946,7 @@ async function getHomepageContentBase(businessId: string) {
     id: payload.meta.homepageContentId,
     values: {
       business_id: businessId,
+      kit_category: payload.kitCategory,
       hero_eyebrow: payload.settings.heroEyebrow,
       hero_headline: payload.settings.heroHeadline,
       hero_subheadline: payload.settings.heroSubheadline,

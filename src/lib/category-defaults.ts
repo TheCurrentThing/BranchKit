@@ -5,6 +5,10 @@ export type CategoryDefaults = {
   heroHeadline: string;
   heroSubheadline: string;
   heroPrimaryCtaLabel: string;
+  heroSecondaryCtaLabel: string;
+  heroSecondaryCtaHref: string;
+  quickInfoHoursLabel: string;
+  orderingNotice: string | null;
   aboutTitle: string;
   aboutBody: string[];
   galleryTitle: string;
@@ -19,6 +23,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Great food, made right.",
     heroSubheadline: "Fresh ingredients, made in-house. Come sit down.",
     heroPrimaryCtaLabel: "View Menu",
+    heroSecondaryCtaLabel: "Find Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About Us",
     aboutBody: [
       "We're a neighborhood restaurant focused on quality ingredients and honest cooking.",
@@ -33,6 +41,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Good coffee. Good company.",
     heroSubheadline: "A neighborhood café worth coming back to.",
     heroPrimaryCtaLabel: "See Our Menu",
+    heroSecondaryCtaLabel: "Find Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Café",
     aboutBody: [
       "We're a neighborhood café focused on quality coffee and a welcoming space.",
@@ -47,6 +59,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Good food. No fuss.",
     heroSubheadline: "Classic comfort food done right. Open early, closed when we're done.",
     heroPrimaryCtaLabel: "See the Menu",
+    heroSecondaryCtaLabel: "Find Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Diner",
     aboutBody: [
       "We're a classic diner serving honest comfort food since day one.",
@@ -61,6 +77,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Find us. Eat well.",
     heroSubheadline: "Check our schedule and come find us at a location near you.",
     heroPrimaryCtaLabel: "See Today's Menu",
+    heroSecondaryCtaLabel: "Find Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Truck",
     aboutBody: [
       "We're a mobile food operation bringing fresh, handmade food to the streets.",
@@ -75,6 +95,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Cold drinks. Good times.",
     heroSubheadline: "Your neighborhood bar. Drinks, bites, and a good room.",
     heroPrimaryCtaLabel: "See Our Menu",
+    heroSecondaryCtaLabel: "Find Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Bar",
     aboutBody: [
       "We're a neighborhood bar built around good drinks and good company.",
@@ -89,6 +113,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Here today. Worth it.",
     heroSubheadline: "A pop-up worth showing up for. Check our next location.",
     heroPrimaryCtaLabel: "See Where We Are",
+    heroSecondaryCtaLabel: "Get in Touch",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Pop-Up",
     aboutBody: [
       "We're a pop-up food concept focused on doing one thing really well.",
@@ -105,6 +133,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Fast, reliable service when you need it.",
     heroSubheadline: "Available now — request a service and we'll be there.",
     heroPrimaryCtaLabel: "Request Service",
+    heroSecondaryCtaLabel: "Contact Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About Our Service",
     aboutBody: [
       "We're a licensed, insured service provider available on short notice.",
@@ -119,6 +151,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Built right, from start to finish.",
     heroSubheadline: "Project-based work with clear scopes and honest timelines.",
     heroPrimaryCtaLabel: "Request a Quote",
+    heroSecondaryCtaLabel: "Contact Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About Our Work",
     aboutBody: [
       "We take on projects where quality matters and timelines are real.",
@@ -133,6 +169,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Book your next appointment.",
     heroSubheadline: "Appointments available — book online or give us a call.",
     heroPrimaryCtaLabel: "Book Now",
+    heroSecondaryCtaLabel: "Contact Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About Our Service",
     aboutBody: [
       "We're a scheduled service provider with availability that fits your calendar.",
@@ -147,6 +187,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Expert guidance when it matters.",
     heroSubheadline: "Strategy, planning, and execution — built around your goals.",
     heroPrimaryCtaLabel: "Get in Touch",
+    heroSecondaryCtaLabel: "Contact Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About Our Work",
     aboutBody: [
       "We're an independent professional service firm working with clients who need real expertise, not generic advice.",
@@ -161,6 +205,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Professional service at your location.",
     heroSubheadline: "Mobile service delivered to your home, office, or wherever you need it.",
     heroPrimaryCtaLabel: "Check Availability",
+    heroSecondaryCtaLabel: "Contact Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About Our Service",
     aboutBody: [
       "We're a fully mobile service bringing professional-grade work directly to your location.",
@@ -177,6 +225,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Art made with intention.",
     heroSubheadline: "Original work, commissions open. See the work.",
     heroPrimaryCtaLabel: "View Portfolio",
+    heroSecondaryCtaLabel: "Get in Touch",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About My Work",
     aboutBody: [
       "I create original work from my studio.",
@@ -191,6 +243,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Made by hand. Built to last.",
     heroSubheadline: "Every piece is crafted with care. Browse the collection.",
     heroPrimaryCtaLabel: "Shop Now",
+    heroSecondaryCtaLabel: "Get in Touch",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About My Craft",
     aboutBody: [
       "I'm an independent maker creating handmade goods from my studio.",
@@ -205,6 +261,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Shop local. Shop well.",
     heroSubheadline: "Curated products, thoughtfully chosen. Stop in or browse online.",
     heroPrimaryCtaLabel: "Browse Products",
+    heroSecondaryCtaLabel: "Visit Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Shop",
     aboutBody: [
       "We're an independent retail shop bringing thoughtfully curated products to our community.",
@@ -219,6 +279,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "A brand with a point of view.",
     heroSubheadline: "Designed with intention. Built for the life you actually live.",
     heroPrimaryCtaLabel: "Shop the Collection",
+    heroSecondaryCtaLabel: "Get in Touch",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Brand",
     aboutBody: [
       "We're an independent brand built around a clear point of view.",
@@ -233,6 +297,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Old things, new homes.",
     heroSubheadline: "Carefully sourced vintage and secondhand. Inventory rotates constantly.",
     heroPrimaryCtaLabel: "See What's In",
+    heroSecondaryCtaLabel: "Visit Us",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Shop",
     aboutBody: [
       "We're a curated vintage and thrift shop with a sharp eye for the good stuff.",
@@ -247,6 +315,10 @@ const CATEGORY_DEFAULTS: Record<KitCategory, CategoryDefaults> = {
     heroHeadline: "Rare things, carefully chosen.",
     heroSubheadline: "A curated archive of rare and limited pieces. Inquire to acquire.",
     heroPrimaryCtaLabel: "Browse the Archive",
+    heroSecondaryCtaLabel: "Inquire",
+    heroSecondaryCtaHref: "#contact",
+    quickInfoHoursLabel: "",
+    orderingNotice: null,
     aboutTitle: "About the Collection",
     aboutBody: [
       "We source, curate, and sell rare and collectible items for serious enthusiasts.",

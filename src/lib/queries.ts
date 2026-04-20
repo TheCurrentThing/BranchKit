@@ -337,9 +337,21 @@ function mapBrand(settingsRow: BusinessSettingsRow | null): BrandConfig {
   };
 }
 
-function mapFeatures(settingsRow: BusinessSettingsRow | null): FeatureFlags {
+function mapFeatures(settingsRow: BusinessSettingsRow | null, kitFamily: KitFamily): FeatureFlags {
   if (!settingsRow) {
-    return seedSitePayload.features;
+    const isFood = kitFamily === "food_service";
+    const isRetail = kitFamily === "retail_products";
+    return {
+      showBreakfastMenu: false,
+      showLunchMenu: isFood,
+      showDinnerMenu: isFood,
+      showSpecials: isFood,
+      showGallery: isRetail,
+      showTestimonials: kitFamily === "services",
+      showMap: false,
+      showOnlineOrdering: false,
+      showStickyMobileBar: false,
+    };
   }
 
   return {
@@ -386,13 +398,13 @@ function mapSettings(
     heroPrimaryCtaHref:
       row?.hero_primary_cta_href ?? seedSitePayload.settings.heroPrimaryCtaHref,
     heroSecondaryCtaLabel:
-      row?.hero_secondary_cta_label ?? seedSitePayload.settings.heroSecondaryCtaLabel,
+      row?.hero_secondary_cta_label ?? catDefaults.heroSecondaryCtaLabel,
     heroSecondaryCtaHref:
-      row?.hero_secondary_cta_href ?? seedSitePayload.settings.heroSecondaryCtaHref,
+      row?.hero_secondary_cta_href ?? catDefaults.heroSecondaryCtaHref,
     quickInfoHoursLabel:
-      row?.quick_info_hours_label ?? seedSitePayload.settings.quickInfoHoursLabel,
+      row?.quick_info_hours_label ?? catDefaults.quickInfoHoursLabel,
     orderingNotice:
-      row?.ordering_notice ?? seedSitePayload.settings.orderingNotice,
+      row?.ordering_notice ?? catDefaults.orderingNotice,
   };
 }
 
@@ -450,7 +462,7 @@ function mapAbout(
 
 function mapHours(hoursRows: BusinessHoursRow[] | null): BusinessHour[] {
   if (!hoursRows || hoursRows.length === 0) {
-    return seedSitePayload.hours;
+    return [];
   }
 
   return hoursRows.map((row) => ({
@@ -784,7 +796,7 @@ async function loadPayload(
     rendererType: effectiveRendererType,
     businessSlug,
     brand: mapBrand(rows?.settingsRow ?? null),
-    features: mapFeatures(rows?.settingsRow ?? null),
+    features: mapFeatures(rows?.settingsRow ?? null, kitFamily),
     settings: mapSettings(
       rows?.homepageRow ?? null,
       publicAnnouncement,

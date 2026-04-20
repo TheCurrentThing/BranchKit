@@ -17,8 +17,14 @@ export function HeaderSection({ payload }: { payload: SitePayload }) {
           <a href={shell.catalogPath} className="hover:text-white transition-colors">
             {shell.catalogLabel}
           </a>
-          <a href="#gallery" className="hover:text-white transition-colors">Gallery</a>
-          <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+          {shell.galleryNavLabel && (
+            <a href={shell.galleryNavPath} className="hover:text-white transition-colors">
+              {shell.galleryNavLabel}
+            </a>
+          )}
+          <a href={shell.contactNavPath} className="hover:text-white transition-colors">
+            {shell.contactNavLabel}
+          </a>
         </nav>
         {payload.brand.phone && (
           <a
