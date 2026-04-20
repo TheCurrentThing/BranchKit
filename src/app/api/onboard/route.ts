@@ -112,6 +112,7 @@ export async function POST(req: NextRequest) {
       }),
       client.from("homepage_content").insert({
         business_id: business.id,
+        kit_category: kitType,
         hero_eyebrow: kitDefaults.heroEyebrow,
         hero_headline: kitDefaults.heroHeadline,
         hero_subheadline: kitDefaults.heroSubheadline,

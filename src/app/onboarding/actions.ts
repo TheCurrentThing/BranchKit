@@ -135,6 +135,7 @@ export async function createOnboardingBusiness(
     }),
     db.from("homepage_content").insert({
       business_id: businessId,
+      kit_category: kitCategory,
       hero_eyebrow: locationTag ?? kit.defaults.heroEyebrow,
       hero_headline: kit.defaults.heroHeadline,
       hero_subheadline: kit.defaults.heroSubheadline,

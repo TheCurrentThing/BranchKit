@@ -14,6 +14,7 @@ import {
 import { createSupabaseAdminClient, isSupabaseConfigured } from "@/lib/supabase";
 import { getCurrentAdminBusinessId, getBusinessBySlug, type BusinessRow, type SiteStatus } from "@/lib/business";
 import { resolveKitIdentity } from "@/lib/kit-config";
+import { getCategoryDefaults } from "@/lib/category-defaults";
 import { toRendererType } from "@/lib/renderer-config";
 import { getBusinessEntitlements, resolveRendererType, hasEntitlement } from "@/lib/entitlements";
 import type { KitFamily, KitCategory, KitType } from "@/types/kit";
@@ -93,6 +94,7 @@ type AnnouncementRow = {
 type HomepageContentRow = {
   id: string;
   business_id: string;
+  kit_category: string | null;
   hero_eyebrow: string;
   hero_headline: string;
   hero_subheadline: string;
@@ -357,68 +359,92 @@ function mapSettings(
   homepageRow: HomepageContentRow | null,
   announcementRow: AnnouncementRow | null,
   hasAnnouncementRows: boolean,
+  kitCategory: KitCategory,
 ): SiteSettings {
+  // A row whose kit_category doesn't match the current business category is stale
+  // (category changed after onboarding). Fall through to category defaults.
+  // Null kit_category means the row predates this column — trust it.
+  const rowIsStale =
+    homepageRow !== null &&
+    homepageRow.kit_category !== null &&
+    homepageRow.kit_category !== kitCategory;
+  const row = rowIsStale ? null : homepageRow;
+  const catDefaults = getCategoryDefaults(kitCategory);
+
   return {
     announcementText:
       announcementRow?.body ??
       (hasAnnouncementRows ? "" : seedSitePayload.settings.announcementText),
     heroEyebrow:
-      homepageRow?.hero_eyebrow ?? seedSitePayload.settings.heroEyebrow,
+      row?.hero_eyebrow ?? catDefaults.heroEyebrow,
     heroHeadline:
-      homepageRow?.hero_headline ?? seedSitePayload.settings.heroHeadline,
+      row?.hero_headline ?? catDefaults.heroHeadline,
     heroSubheadline:
-      homepageRow?.hero_subheadline ?? seedSitePayload.settings.heroSubheadline,
+      row?.hero_subheadline ?? catDefaults.heroSubheadline,
     heroPrimaryCtaLabel:
-      homepageRow?.hero_primary_cta_label ??
-      seedSitePayload.settings.heroPrimaryCtaLabel,
+      row?.hero_primary_cta_label ?? catDefaults.heroPrimaryCtaLabel,
     heroPrimaryCtaHref:
-      homepageRow?.hero_primary_cta_href ??
-      seedSitePayload.settings.heroPrimaryCtaHref,
+      row?.hero_primary_cta_href ?? seedSitePayload.settings.heroPrimaryCtaHref,
     heroSecondaryCtaLabel:
-      homepageRow?.hero_secondary_cta_label ??
-      seedSitePayload.settings.heroSecondaryCtaLabel,
+      row?.hero_secondary_cta_label ?? seedSitePayload.settings.heroSecondaryCtaLabel,
     heroSecondaryCtaHref:
-      homepageRow?.hero_secondary_cta_href ??
-      seedSitePayload.settings.heroSecondaryCtaHref,
+      row?.hero_secondary_cta_href ?? seedSitePayload.settings.heroSecondaryCtaHref,
     quickInfoHoursLabel:
-      homepageRow?.quick_info_hours_label ??
-      seedSitePayload.settings.quickInfoHoursLabel,
+      row?.quick_info_hours_label ?? seedSitePayload.settings.quickInfoHoursLabel,
     orderingNotice:
-      homepageRow?.ordering_notice ?? seedSitePayload.settings.orderingNotice,
+      row?.ordering_notice ?? seedSitePayload.settings.orderingNotice,
   };
 }
 
-function mapHomepage(homepageRow: HomepageContentRow | null): HomePageContent {
+function mapHomepage(
+  homepageRow: HomepageContentRow | null,
+  kitCategory: KitCategory,
+): HomePageContent {
+  const rowIsStale =
+    homepageRow !== null &&
+    homepageRow.kit_category !== null &&
+    homepageRow.kit_category !== kitCategory;
+  const row = rowIsStale ? null : homepageRow;
+  const catDefaults = getCategoryDefaults(kitCategory);
+
   return {
     heroImageUrl:
-      homepageRow?.hero_image_url ?? seedSitePayload.homePage.heroImageUrl,
+      row?.hero_image_url ?? seedSitePayload.homePage.heroImageUrl,
     specialsIntro: seedSitePayload.homePage.specialsIntro,
     featuredMenuTitle: seedSitePayload.homePage.featuredMenuTitle,
     featuredMenuIntro: seedSitePayload.homePage.featuredMenuIntro,
     galleryTitle:
-      homepageRow?.gallery_title ?? seedSitePayload.homePage.galleryTitle,
+      row?.gallery_title ?? catDefaults.galleryTitle,
     gallerySubtitle:
-      homepageRow?.gallery_subtitle ?? seedSitePayload.homePage.gallerySubtitle,
+      row?.gallery_subtitle ?? seedSitePayload.homePage.gallerySubtitle,
     menuPreviewTitle:
-      homepageRow?.menu_preview_title ??
-      seedSitePayload.homePage.menuPreviewTitle,
+      row?.menu_preview_title ?? catDefaults.menuPreviewTitle,
     menuPreviewSubtitle:
-      homepageRow?.menu_preview_subtitle ??
-      seedSitePayload.homePage.menuPreviewSubtitle,
+      row?.menu_preview_subtitle ?? seedSitePayload.homePage.menuPreviewSubtitle,
     contactTitle:
-      homepageRow?.contact_title ?? seedSitePayload.homePage.contactTitle,
+      row?.contact_title ?? catDefaults.contactTitle,
     contactSubtitle:
-      homepageRow?.contact_subtitle ?? seedSitePayload.homePage.contactSubtitle,
+      row?.contact_subtitle ?? seedSitePayload.homePage.contactSubtitle,
   };
 }
 
-function mapAbout(homepageRow: HomepageContentRow | null): AboutPageContent {
+function mapAbout(
+  homepageRow: HomepageContentRow | null,
+  kitCategory: KitCategory,
+): AboutPageContent {
+  const rowIsStale =
+    homepageRow !== null &&
+    homepageRow.kit_category !== null &&
+    homepageRow.kit_category !== kitCategory;
+  const row = rowIsStale ? null : homepageRow;
+  const catDefaults = getCategoryDefaults(kitCategory);
+
   return {
-    title: homepageRow?.about_title ?? seedSitePayload.aboutPage.title,
+    title: row?.about_title ?? catDefaults.aboutTitle,
     body:
-      Array.isArray(homepageRow?.about_body) && homepageRow.about_body.length > 0
-        ? homepageRow.about_body
-        : seedSitePayload.aboutPage.body,
+      Array.isArray(row?.about_body) && row.about_body.length > 0
+        ? row.about_body
+        : catDefaults.aboutBody,
   };
 }
 
@@ -763,10 +789,11 @@ async function loadPayload(
       rows?.homepageRow ?? null,
       publicAnnouncement,
       Boolean(rows && rows.announcementsRows.length > 0),
+      kitCategory,
     ),
     hours: mapHours(rows?.hoursRows ?? null),
-    homePage: mapHomepage(rows?.homepageRow ?? null),
-    aboutPage: mapAbout(rows?.homepageRow ?? null),
+    homePage: mapHomepage(rows?.homepageRow ?? null, kitCategory),
+    aboutPage: mapAbout(rows?.homepageRow ?? null, kitCategory),
     specials: mapSpecials(rows?.specialsRows ?? null, kitFamily),
     menuCategories: mapMenu(rows?.categoriesRows ?? null, rows?.itemsRows ?? null, kitFamily),
     serviceOfferings: mapServiceOfferings(rows?.serviceOfferingsRows ?? null),

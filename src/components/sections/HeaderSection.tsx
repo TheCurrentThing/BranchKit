@@ -1,8 +1,9 @@
-// Site header / navigation. Minimal nav bar with business name + key links.
-
 import type { SitePayload } from "@/types/site";
+import { resolveShellCopy } from "@/lib/rendering/shell-copy-contract";
 
 export function HeaderSection({ payload }: { payload: SitePayload }) {
+  const shell = resolveShellCopy(payload.kitCategory);
+
   return (
     <header
       data-section="header"
@@ -13,7 +14,9 @@ export function HeaderSection({ payload }: { payload: SitePayload }) {
           {payload.brand.businessName}
         </span>
         <nav className="hidden gap-6 text-sm text-zinc-400 md:flex">
-          <a href="#services" className="hover:text-white transition-colors">Services</a>
+          <a href={shell.catalogPath} className="hover:text-white transition-colors">
+            {shell.catalogLabel}
+          </a>
           <a href="#gallery" className="hover:text-white transition-colors">Gallery</a>
           <a href="#contact" className="hover:text-white transition-colors">Contact</a>
         </nav>
