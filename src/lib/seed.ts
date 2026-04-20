@@ -546,5 +546,6 @@ export const seedSitePayload: SitePayload = {
     },
   ],
   serviceOfferings: [],
+  serviceAreas: [],
   testimonials: [],
 };

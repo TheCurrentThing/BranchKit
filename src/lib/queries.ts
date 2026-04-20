@@ -26,6 +26,7 @@ import type {
   GalleryImage,
   HomePageContent,
   LogoAlignment,
+  ServiceArea,
   ServiceOffering,
   SitePayload,
   SiteSettings,
@@ -189,6 +190,14 @@ type TestimonialRow = {
   sort_order: number;
 };
 
+type ServiceAreaRow = {
+  id: string;
+  business_id: string;
+  name: string;
+  sort_order: number;
+  is_active: boolean;
+};
+
 type SiteRows = {
   settingsRow: BusinessSettingsRow | null;
   announcementsRows: AnnouncementRow[];
@@ -199,6 +208,7 @@ type SiteRows = {
   itemsRows: MenuItemRow[];
   galleryRows: GalleryImageRow[];
   serviceOfferingsRows: ServiceOfferingRow[];
+  serviceAreasRows: ServiceAreaRow[];
   testimonialsRows: TestimonialRow[];
 };
 
@@ -506,6 +516,16 @@ function mapGallery(rows: GalleryImageRow[] | null, kitFamily: KitFamily = "food
   );
 }
 
+function mapServiceAreas(rows: ServiceAreaRow[] | null): ServiceArea[] {
+  if (!rows || rows.length === 0) return [];
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    sortOrder: row.sort_order,
+    isActive: row.is_active,
+  }));
+}
+
 function mapServiceOfferings(rows: ServiceOfferingRow[] | null): ServiceOffering[] {
   if (!rows || rows.length === 0) return [];
   return rows.map((row) => ({
@@ -569,6 +589,7 @@ function filterPayloadForPublic(payload: SitePayload): SitePayload {
       ? payload.specials.filter((entry) => entry.isActive)
       : [],
     serviceOfferings: payload.serviceOfferings.filter((o) => o.isActive),
+    serviceAreas: payload.serviceAreas.filter((a) => a.isActive),
     galleryImages: payload.features.showGallery
       ? payload.galleryImages.filter((entry) => entry.isActive)
       : [],
@@ -594,6 +615,7 @@ const fetchSiteRowsCached = cache(async (businessId: string): Promise<SiteRows |
     itemsResult,
     galleryResult,
     serviceOfferingsResult,
+    serviceAreasResult,
     testimonialsResult,
   ] = await Promise.all([
     client
@@ -654,6 +676,12 @@ const fetchSiteRowsCached = cache(async (businessId: string): Promise<SiteRows |
       .order("sort_order", { ascending: true })
       .returns<ServiceOfferingRow[]>(),
     client
+      .from("service_areas")
+      .select("id, business_id, name, sort_order, is_active")
+      .eq("business_id", businessId)
+      .order("sort_order", { ascending: true })
+      .returns<ServiceAreaRow[]>(),
+    client
       .from("testimonials")
       .select("id, business_id, author_name, body, rating, is_featured, is_active, sort_order")
       .eq("business_id", businessId)
@@ -671,6 +699,7 @@ const fetchSiteRowsCached = cache(async (businessId: string): Promise<SiteRows |
     itemsRows: itemsResult.data ?? [],
     galleryRows: galleryResult.data ?? [],
     serviceOfferingsRows: serviceOfferingsResult.data ?? [],
+    serviceAreasRows: serviceAreasResult.data ?? [],
     testimonialsRows: testimonialsResult.data ?? [],
   };
 });
@@ -717,6 +746,7 @@ async function loadPayload(
     specials: mapSpecials(rows?.specialsRows ?? null, kitFamily),
     menuCategories: mapMenu(rows?.categoriesRows ?? null, rows?.itemsRows ?? null, kitFamily),
     serviceOfferings: mapServiceOfferings(rows?.serviceOfferingsRows ?? null),
+    serviceAreas: mapServiceAreas(rows?.serviceAreasRows ?? null),
     galleryImages: mapGallery(rows?.galleryRows ?? null, kitFamily),
     testimonials: mapTestimonials(rows?.testimonialsRows ?? null),
     meta: {

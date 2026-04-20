@@ -125,6 +125,13 @@ export interface ServiceOffering {
   sortOrder: number;
 }
 
+export interface ServiceArea {
+  id: string;
+  name: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
 export interface SitePayload {
   kitType: KitType;         // compat alias — mirrors kitCategory
   kitFamily: KitFamily;
@@ -139,6 +146,7 @@ export interface SitePayload {
   specials: BusinessSpecial[];
   menuCategories: MenuCategory[];
   serviceOfferings: ServiceOffering[];
+  serviceAreas: ServiceArea[];
   galleryImages: GalleryImage[];
   testimonials: Testimonial[];
 }

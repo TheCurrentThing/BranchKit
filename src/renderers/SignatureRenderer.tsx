@@ -8,12 +8,17 @@ import { QuickInfoBar } from "@/components/sections/QuickInfoBar";
 import { SpecialsSection } from "@/components/sections/SpecialsSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { LocalBusinessJsonLd } from "@/components/layout/LocalBusinessJsonLd";
+import { StandardRenderer } from "@/renderers/StandardRenderer";
 import type { SiteRendererProps } from "@/types/renderer";
 
-// Signature renderer: all sections rendered without kit-level gating.
-// Feature flags still suppress individual sections (showSpecials, showGallery, etc.).
-// Reserved for premium tiers — designed for maximum visual impact.
+// Signature renderer: premium visual layout for food_service businesses.
+// Non-food families fall back to StandardRenderer until SignatureRenderer
+// is extended to support all families.
 export function SignatureRenderer({ payload, basePath }: SiteRendererProps) {
+  if (payload.kitFamily !== "food_service") {
+    return <StandardRenderer payload={payload} basePath={basePath} />;
+  }
+
   const {
     brand,
     settings,
@@ -69,7 +74,7 @@ export function SignatureRenderer({ payload, basePath }: SiteRendererProps) {
         subtitle={homePage.contactSubtitle}
       />
 
-      {features.showTestimonials && (
+      {testimonials.length > 0 && (
         <TestimonialsSection testimonials={testimonials} />
       )}
     </>
