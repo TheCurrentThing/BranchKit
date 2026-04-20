@@ -67,10 +67,10 @@ export function buildPreviewPayload(
         heroImageUrl: brandingDraft.heroImageUrl ?? undefined,
       };
     }
-    if (brandingDraft.heroEyebrow !== undefined) {
+    if (brandingDraft.heroEyebrow != null) {
       out.settings = {
         ...out.settings,
-        heroEyebrow: brandingDraft.heroEyebrow ?? undefined,
+        heroEyebrow: brandingDraft.heroEyebrow,
       };
     }
   }
