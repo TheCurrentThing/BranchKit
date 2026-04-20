@@ -108,6 +108,13 @@ export async function createOnboardingBusiness(
       business_id: businessId,
       business_name: name,
       tagline: locationTag ? `${name} — ${locationTag}` : name,
+      // Contact fields are NOT NULL in schema — use empty strings so the row
+      // is created successfully. Business fills these in via admin/contact.
+      phone: "",
+      address_line_1: "",
+      city: locationTag ?? "",
+      state: "",
+      zip: "",
       theme_mode: "preset",
       theme_preset_id: seed.brand.themePresetId,
       theme_tokens: seed.brand.themeTokens ?? {},

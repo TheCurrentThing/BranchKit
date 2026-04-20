@@ -83,13 +83,14 @@ export async function POST(req: NextRequest) {
       client.from("business_settings").insert({
         business_id: business.id,
         business_name: name,
-        tagline: seed.brand.tagline,
-        phone: seed.brand.phone,
-        email: seed.brand.email || null,
-        address_line_1: seed.brand.addressLine1,
-        city: seed.brand.city,
-        state: seed.brand.state,
-        zip: seed.brand.zip,
+        tagline: name,
+        // Contact fields are NOT NULL — use empty strings so the row is created
+        // successfully. Operator fills these in via admin/contact after onboarding.
+        phone: "",
+        address_line_1: "",
+        city: "",
+        state: "",
+        zip: "",
         theme_mode: "preset",
         theme_preset_id: seed.brand.themePresetId,
         theme_tokens: seed.brand.themeTokens ?? {},

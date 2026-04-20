@@ -235,12 +235,36 @@ function normalizeLogoAlignment(value: string | null | undefined): LogoAlignment
 
 function mapBrand(settingsRow: BusinessSettingsRow | null): BrandConfig {
   if (!settingsRow) {
-    return seedSitePayload.brand;
+    // No settings row yet — return a clean theme-only fallback.
+    // Deliberately NOT seedSitePayload.brand: that's the Ember & Oak demo tenant
+    // and its name/address/phone must never bleed into a real business.
+    const defaultPreset = getThemePresetById();
+    const defaultLegacy = themeTokensToLegacyFields(defaultPreset.colors);
+    const defaultFonts = fontPackToFontStacks(defaultPreset.fonts);
+    return {
+      businessName: "",
+      tagline: "",
+      logoText: "",
+      logoAlignment: "left",
+      email: "",
+      phone: "",
+      addressLine1: "",
+      city: "",
+      state: "",
+      zip: "",
+      socialLinks: {},
+      themeMode: "preset",
+      themePresetId: defaultPreset.id,
+      themeTokens: defaultPreset.colors,
+      ...defaultLegacy,
+      headingFont: defaultFonts.heading,
+      bodyFont: defaultFonts.body,
+    };
   }
 
   const themeMode = settingsRow.theme_mode === "custom" ? "custom" : "preset";
   const themePresetId =
-    settingsRow.theme_preset_id ?? seedSitePayload.brand.themePresetId;
+    settingsRow.theme_preset_id ?? getThemePresetById().id;
   const parsedThemeTokens = parseThemeTokens(settingsRow.theme_tokens);
   const resolvedTheme = resolveTheme({
     themeMode,
